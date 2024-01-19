@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 export default function Register() {
     return (
@@ -8,18 +9,34 @@ export default function Register() {
             </p>
             <form>
                 <div className="input-box">
-                    <input></input>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        placeholder="Name" 
+                        required
+                    />
                 </div>
                 <div className="input-box">
-                    <input></input>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        placeholder="Email" 
+                        required
+                    />
                 </div>
                 <div className="input-box">
-                    <input></input>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        placeholder="Password" 
+                        required
+                    />
                 </div>
+                <button>Register</button>
             </form>
-            <a href="/" rel="noopener noreferrer">
-                Back to Landing Page
-            </a>
+            <Link href="/">
+                <button>Back to Landing Page</button>
+            </Link>
         </div>
     );
 }

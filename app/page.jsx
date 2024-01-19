@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 export default function HomePage() {
     return (
@@ -6,12 +7,14 @@ export default function HomePage() {
             <p>
                 Welcome to the placeholder landing page
             </p>
-            <a href="/login" rel="noopener noreferrer">
-                Login
-            </a>
-            <a href="/register" rel="noopener noreferrer">
-                Register
-            </a>
+            <div style={{display: "flex", gap: "20px"}}>
+                <Link href="/login">
+                    <button>Login</button>
+                </Link>
+                <Link href="/register">
+                    <button>Register</button>
+                </Link>
+            </div>
         </div>
     );
 }
