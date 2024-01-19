@@ -1,6 +1,28 @@
+'use client';
 import Link from 'next/link';
+import { supabase } from '@/supabaseClient';
 
 export default function HomePage() {
+    const handleSignOut = async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.log('Error signing user out');
+        } else {
+            console.log('Signed out');
+        }
+    };
+
+    const checkSession = async () => {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+            console.log('Error checking session:', error);
+        } else {
+            console.log('Session:', data.session);
+        }
+    };
+
     return (
         <div>
             <h1>Placeholder Landing Page</h1>
@@ -14,6 +36,8 @@ export default function HomePage() {
                 <Link href="/register">
                     <button>Register</button>
                 </Link>
+                <button onClick={handleSignOut}>Sign Out</button>
+                <button onClick={checkSession}>Check Session</button>
             </div>
         </div>
     );
