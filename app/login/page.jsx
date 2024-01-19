@@ -1,6 +1,4 @@
-'use client';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
 
 export default function Login() {
     return (
@@ -9,8 +7,8 @@ export default function Login() {
             <p>
                 Welcome to the Placeholder Login Page
             </p>
-            <button onClick={() => signIn('github')}>
-                Sign In With GitHub
+            <button>
+                Login
             </button>
             <Link href="/">
                 <button>Back to Landing Page</button>
