@@ -39,8 +39,8 @@ export default function ViewChatrooms() {
                     <p>
                     Welcome to the View Chatrooms Page
                     </p>
-                    <Link href={`/chatroom/${uuid}`}>
-                        <button>To Chatroom {uuid}</button>
+                    <Link href={`/chatroom/chatroom1`}>
+                        <button>To Chatroom 1</button>
                     </Link>
                     <Link href="/">
                         <button>Back to Landing Page</button>
