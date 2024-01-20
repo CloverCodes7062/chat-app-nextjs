@@ -39,49 +39,46 @@ export default function Chatroom({ params }) {
     }, [router]);
 
     useEffect(() => {
-        const getChatroomData = async () => {
-            const { data: messages } = await supabase
-            .from(uuid)
-            .select()
-            .order('created_at');
+        const checkAllowedIn = async () => {
+            const { data: chatroom, error } = await supabase
+            .from('chatrooms')
+            .select('users_allowed_in')
+            .eq('room_id', uuid)
+            
+            console.log('chatroom', chatroom);
 
-            if (messages) {
-                setChatroomData(messages);
-                setChatroomName(messages[0].chatroom_name);
-                console.log('messages', messages);
+            if (chatroom[0].users_allowed_in.includes(session.user.id)) {
+                setAllowedIn(true);
+            } else {
+                router.push('/viewChatrooms')
             }
         };
 
         const getUserProfile = async () => {
-            const { data: userProfile } = await supabase
+            const { data: userProfile, error } = await supabase
             .from('profiles')
             .select()
             .eq('id', session.user.id)
 
             setDisplayName(userProfile[0].display_name);
+            console.log('userProfile', userProfile);
+        };
 
-            if (!userProfile[0].rooms_allowed_in) {
-                router.push('/viewChatrooms');
-            } else {
-                let userAllowedIn = false;
+        const getRoomData = async () => {
+            const { data: roomData, error } = await supabase
+            .from('messages')
+            .select()
+            .eq('room_id', uuid)
+            .order('created_at');
 
-                await userProfile[0].rooms_allowed_in.forEach((roomAllowedIn) => {
-                    console.log(roomAllowedIn);
-                    if (roomAllowedIn.room_id == uuid) {
-                        setAllowedIn(true);
-                        userAllowedIn = true;
-                    }
-                })
-
-                if (!userAllowedIn) {
-                    router.push('/viewChatrooms');
-                }
-            }
+            setChatroomData(roomData);
+            console.log('roomData', roomData);
         };
 
         if (session) {
-            getChatroomData();
+            checkAllowedIn();
             getUserProfile();
+            getRoomData();
         }
     }, [session]);
 
@@ -95,8 +92,8 @@ export default function Chatroom({ params }) {
         console.log(sender_uuid, content, sent_by_email, sent_by_name);
 
         const { error } = await supabase
-            .from(uuid)
-            .insert({ content: content, sent_by_name: sent_by_name, sender_uuid: sender_uuid, sent_by_email: sent_by_email })
+            .from('messages')
+            .insert({ room_id: uuid, content: content, sent_by_name: sent_by_name, sender_uuid: sender_uuid, sent_by_email: sent_by_email })
 
         if (error) {
             console.log('Error Inserting Message', error);
@@ -105,8 +102,9 @@ export default function Chatroom({ params }) {
         setMessageInputValue('');
 
         const { data: messages } = await supabase
-            .from(uuid)
+            .from('messages')
             .select()
+            .eq('room_id', uuid)
             .order('created_at');
 
         setChatroomData(messages);
@@ -118,24 +116,21 @@ export default function Chatroom({ params }) {
             <div>
                 <h1 style={{color: '#fff'}}>Welcome to Chatroom {chatroomName}</h1> 
                 <ul>
-                    {chatroomData.map((message) => {
-                        return (
-                        <li key={message.id}>
-                            <p style={{fontSize: '16px', color: '#fff'}}>
-                                {`
-                                Message Sender: ${message.sent_by_name}, 
-                                Message Sender Email: ${message.sent_by_email}, 
-                                Message Content: ${message.content}, 
-                                Message Id: ${message.id}, 
-                                Message Created At: ${message.created_at}, 
-                                Message UUID of Sender: ${message.sender_uuid}, 
-                                Message Chatroom UUID : ${message.chatroom1_uuid}, 
-                                Message Chatroom Name : ${message.chatroom_name}
-                                `}
-                            </p>
-                        </li>
-                        );
-                    })}
+                    {chatroomData ? 
+                        chatroomData.map((message) => {
+                            return (
+                                <li key={message.message_id}>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.content}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.created_at}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.room_id}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.sender_uuid}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_email}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
+                                </li>
+                            );
+                        })
+                    : null
+                    }
                 </ul>
                 <form onSubmit={handleSentMessage}>
                     <input

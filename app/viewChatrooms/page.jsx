@@ -13,7 +13,6 @@ export default function ViewChatrooms() {
     
     const [displayName, setDisplayName] = useState('');
     const [roomsAllowedIn, setRoomsAllowedIn] = useState([]);
-    const [roomsAllowedInObj, setRoomsAllowedInObj] = useState([]);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -46,27 +45,23 @@ export default function ViewChatrooms() {
                 .eq('id', session.user.id)
 
                 setDisplayName(userProfile[0].display_name);
-                setRoomsAllowedIn(userProfile[0].rooms_allowed_in);
             }
+
+            const getRoomsAllowedin = async () => {
+                const { data: chatrooms, error } = await supabase
+                .from('chatrooms')
+                .select('room_id, chatroom_name')
+                .contains('users_allowed_in', [session.user.id])
+                
+                setRoomsAllowedIn(chatrooms);
+                console.log('chatrooms', chatrooms);
+            }
+
+            getRoomsAllowedin();
 
             getUserProfile();
         }
     }, [session])
-
-    useEffect(() => {
-        if (roomsAllowedIn) {
-            console.log('roomsAllowedIn', roomsAllowedIn);
-
-            const updateRoomsAllowedInObj = async () => {
-                for (const roomAllowedIn of roomsAllowedIn) {
-                    console.log(roomAllowedIn.room_id);
-                    console.log(roomAllowedIn.room_name)
-                }
-            };
-
-            updateRoomsAllowedInObj();
-        }
-    }, [roomsAllowedIn])
 
     return (
         <>
@@ -82,7 +77,7 @@ export default function ViewChatrooms() {
                                 return (
                                     <li key={roomAllowedIn.room_id}>
                                         <Link href={`/chatroom/${roomAllowedIn.room_id}`}>
-                                            <button>To {roomAllowedIn.room_name}</button>
+                                            <button>To {roomAllowedIn.chatroom_name}</button>
                                         </Link>
                                     </li>
                                 );
