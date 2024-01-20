@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
