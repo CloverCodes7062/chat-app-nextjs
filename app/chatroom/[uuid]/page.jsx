@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
@@ -9,6 +10,8 @@ export default function Chatroom({ params }) {
     const [chatroomName, setChatroomName] = useState('');
 
     const [session, setSession] = useState(null);
+
+    const [allowedIn, setAllowedIn] = useState(false);
 
     const [displayName, setDisplayName] = useState('');
 
@@ -42,10 +45,12 @@ export default function Chatroom({ params }) {
             .select()
             .order('created_at');
 
-            setChatroomData(messages);
-            setChatroomName(messages[0].chatroom_name);
-            console.log('messages', messages);
-        }
+            if (messages) {
+                setChatroomData(messages);
+                setChatroomName(messages[0].chatroom_name);
+                console.log('messages', messages);
+            }
+        };
 
         const getUserProfile = async () => {
             const { data: userProfile } = await supabase
@@ -54,7 +59,25 @@ export default function Chatroom({ params }) {
             .eq('id', session.user.id)
 
             setDisplayName(userProfile[0].display_name);
-        }
+
+            if (!userProfile[0].rooms_allowed_in) {
+                router.push('/viewChatrooms');
+            } else {
+                let userAllowedIn = false;
+
+                await userProfile[0].rooms_allowed_in.forEach((roomAllowedIn) => {
+                    console.log(roomAllowedIn);
+                    if (roomAllowedIn.room_id == uuid) {
+                        setAllowedIn(true);
+                        userAllowedIn = true;
+                    }
+                })
+
+                if (!userAllowedIn) {
+                    router.push('/viewChatrooms');
+                }
+            }
+        };
 
         if (session) {
             getChatroomData();
@@ -91,7 +114,7 @@ export default function Chatroom({ params }) {
 
     return (
         <>
-            {session ? 
+            {(session && allowedIn) ? 
             <div>
                 <h1 style={{color: '#fff'}}>Welcome to Chatroom {chatroomName}</h1> 
                 <ul>
@@ -125,6 +148,9 @@ export default function Chatroom({ params }) {
                     </input>
                     <button type="submit" >Send Message</button>
                 </form>
+                <Link href="/">
+                    <button>To Landing Page</button>
+                </Link>
             </div>
             : null
             }
