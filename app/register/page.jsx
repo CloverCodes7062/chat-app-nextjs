@@ -7,6 +7,8 @@ import { redirect, useRouter } from 'next/navigation';
 export default function Register() {
     const [emailValue, setEmailValue] = useState('');
     const [passwordValue, setPasswordValue] = useState('');
+    const [nameValue, setNameValue] = useState('');
+
     const router = useRouter();
 
     const handleRegister = async (event) => {
@@ -25,6 +27,16 @@ export default function Register() {
             router.push('/login');
         }
 
+        const createUserProfile = async () => {
+            const { error } = await supabase
+            .from('profiles')
+            .insert({ id: data.user.id, display_name: nameValue, rooms_allowed_in: [{"room_id":"2d03c198-ce3a-43ec-9aab-043fa2a2fcc7","room_name":"chatroom1"}] })
+
+            setNameValue('');
+        };
+
+        createUserProfile();
+
         setEmailValue('');
         setPasswordValue('');
     };
@@ -40,7 +52,9 @@ export default function Register() {
                     <input 
                         type="text" 
                         name="name" 
-                        placeholder="Name" 
+                        placeholder="Name"
+                        value={nameValue}
+                        onChange={(e) => {setNameValue(e.target.value)}} 
                         required
                     />
                 </div>
