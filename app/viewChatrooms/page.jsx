@@ -14,6 +14,8 @@ export default function ViewChatrooms() {
     const [displayName, setDisplayName] = useState('');
     const [roomsAllowedIn, setRoomsAllowedIn] = useState([]);
 
+    const [userCreatedChatroomName, setUserCreatedChatroomName] = useState('');
+
     useEffect(() => {
         const checkSession = async () => {
             const { data, error } = await supabase.auth.getSession();
@@ -61,7 +63,17 @@ export default function ViewChatrooms() {
 
             getUserProfile();
         }
-    }, [session])
+    }, [session]);
+
+    const createNewRoom = async () => {
+        const { error } = await supabase
+        .from('chatrooms')
+        .insert({ created_by: session.user.id, chatroom_name: userCreatedChatroomName, users_allowed_in: [session.user.id] })
+
+        if (error) {
+            console.log('Error Inserting New Room', error);
+        }
+    };
 
     return (
         <>
@@ -87,6 +99,16 @@ export default function ViewChatrooms() {
                     <Link href="/">
                         <button>Back to Landing Page</button>
                     </Link>
+                    <form onSubmit={createNewRoom}>
+                        <input
+                            value={userCreatedChatroomName}
+                            onChange={(e) => setUserCreatedChatroomName(e.target.value)}
+                            name="userCreatedChatroomName"
+                            placeholder='Enter a Chatroom Name'
+                            required
+                        />
+                        <button type='submit'>Create a Chatroom</button>
+                    </form>
                 </div>
             : null}
         </>
