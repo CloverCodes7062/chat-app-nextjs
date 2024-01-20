@@ -25,8 +25,8 @@ export default function HomePage() {
 
     return (
         <div>
-            <h1>Placeholder Landing Page</h1>
-            <p>
+            <h1 style={{color: '#fff'}}>Placeholder Landing Page</h1>
+            <p style={{fontSize: '16px', color: '#fff'}}>
                 Welcome to the placeholder landing page
             </p>
             <div style={{display: "flex", gap: "20px"}}>
@@ -35,6 +35,9 @@ export default function HomePage() {
                 </Link>
                 <Link href="/register">
                     <button>Register</button>
+                </Link>
+                <Link href="/viewChatrooms">
+                    <button>View Chatrooms</button>
                 </Link>
                 <button onClick={handleSignOut}>Sign Out</button>
                 <button onClick={checkSession}>Check Session</button>

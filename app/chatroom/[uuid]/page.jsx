@@ -6,8 +6,12 @@ export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
     const [chatroomData, setChatroomData] = useState([]);
+    const [chatroomName, setChatroomName] = useState('');
+
     const [session, setSession] = useState(null);
-    
+
+    const [displayName, setDisplayName] = useState('');
+
     const [messageInputValue, setMessageInputValue] = useState('');
 
     useEffect(() => {
@@ -34,24 +38,62 @@ export default function Chatroom({ params }) {
     useEffect(() => {
         const getChatroomData = async () => {
             const { data: messages } = await supabase
-            .from('chatroom1_messages')
+            .from(uuid)
             .select()
-            .order('created_at')
+            .order('created_at');
 
             setChatroomData(messages);
-            console.log('posts', messages);
+            setChatroomName(messages[0].chatroom_name);
+            console.log('messages', messages);
+        }
+
+        const getUserProfile = async () => {
+            const { data: userProfile } = await supabase
+            .from('profiles')
+            .select()
+            .eq('id', session.user.id)
+
+            setDisplayName(userProfile[0].display_name);
         }
 
         if (session) {
             getChatroomData();
+            getUserProfile();
         }
-    }, [session])
+    }, [session]);
+
+    const handleSentMessage = async (event) => {
+        event.preventDefault();
+        const content = event.target.message.value;
+        const sent_by_name = displayName;
+        const sender_uuid = session.user.id;
+        const sent_by_email = session.user.email;
+
+        console.log(sender_uuid, content, sent_by_email, sent_by_name);
+
+        const { error } = await supabase
+            .from(uuid)
+            .insert({ content: content, sent_by_name: sent_by_name, sender_uuid: sender_uuid, sent_by_email: sent_by_email })
+
+        if (error) {
+            console.log('Error Inserting Message', error);
+        }
+
+        setMessageInputValue('');
+
+        const { data: messages } = await supabase
+            .from(uuid)
+            .select()
+            .order('created_at');
+
+        setChatroomData(messages);
+    };
 
     return (
         <>
             {session ? 
             <div>
-                <h1 style={{color: '#fff'}}>Welcome to Chatroom {uuid}</h1> 
+                <h1 style={{color: '#fff'}}>Welcome to Chatroom {chatroomName}</h1> 
                 <ul>
                     {chatroomData.map((message) => {
                         return (
@@ -64,16 +106,18 @@ export default function Chatroom({ params }) {
                                 Message Id: ${message.id}, 
                                 Message Created At: ${message.created_at}, 
                                 Message UUID of Sender: ${message.sender_uuid}, 
-                                Message Chatroom UUID : ${message.chatroom1_uuid}
+                                Message Chatroom UUID : ${message.chatroom1_uuid}, 
+                                Message Chatroom Name : ${message.chatroom_name}
                                 `}
                             </p>
                         </li>
                         );
                     })}
                 </ul>
-                <form>
+                <form onSubmit={handleSentMessage}>
                     <input
                         placeholder="Enter a message"
+                        name="message"
                         value={messageInputValue}
                         onChange={(e) => setMessageInputValue(e.target.value)}
                         required
