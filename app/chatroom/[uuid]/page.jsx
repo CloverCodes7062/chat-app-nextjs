@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import styles from '../[uuid]/userChatroom.module.css';
 
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
@@ -50,6 +51,10 @@ export default function Chatroom({ params }) {
             .select('users_allowed_in, chatroom_name')
             .eq('room_id', uuid)
             
+            if (!chatroom) {
+                router.push('/viewChatrooms');
+            }
+
             console.log('chatroom', chatroom);
 
             if (chatroom[0].users_allowed_in.includes(session.user.id)) {
@@ -107,14 +112,6 @@ export default function Chatroom({ params }) {
         }
 
         setMessageInputValue('');
-
-        const { data: messages } = await supabase
-            .from('messages')
-            .select()
-            .eq('room_id', uuid)
-            .order('created_at');
-
-        setChatroomData(messages);
     };
 
     const handleInviteUser = async (event) => {
@@ -154,53 +151,72 @@ export default function Chatroom({ params }) {
         await inviteUserById();
     };
 
+    const handleDeleteChatMessage = async (event, message_id) => {
+        event.preventDefault();
+        
+        console.log('Delete Message Button Clicked', message_id);
+
+        const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('message_id', message_id)
+
+        if (error) {
+            console.log('Error deleting message from DB', error);
+        } else {
+            console.log('Message deleted from DB');
+        }
+    }
+
     return (
         <>
             {(session && allowedIn) ? 
-            <div>
-                <h1 style={{color: '#fff'}}>Welcome to {chatroomName}</h1> 
-                <ul style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+            <div className={styles.mainSection}>
+                <h1 style={{color: '#fff', textAlign: 'center', margin: '0', padding: '0', marginTop: '-15px'}}>Welcome to {chatroomName}</h1> 
+                <ul className={styles.mainUl}>
                     {chatroomData ? 
                         chatroomData.map((message) => {
                             return (
-                                <li key={message.message_id} style={{backgroundColor: 'black'}}>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Content: {message.content}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Creation Date: {message.created_at}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Room Id: {message.room_id}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Sender UUID: {message.sender_uuid}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Sender's Email: {message.sent_by_email}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>Message Sender's Name: {message.sent_by_name}</p>
+                                <li className={(message.sent_by_email == session.user.email) ? `${styles.sentMessage} ${styles.chatMessage}` : `${styles.receivedMessage} ${styles.chatMessage}`} key={message.message_id}>
+                                    {(message.sent_by_email == session.user.email) ? <button onClick={(event) => handleDeleteChatMessage(event, message.message_id)} style={{position: 'absolute', top: '10px', left: '10px', padding: '10px'}}>Delete</button> : null}
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
+                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.content}</p>
+                                    <p style={{fontSize: '18px', color: '#fff', position: 'absolute', top: '20px', right: '20px'}}>{(new Date(message.created_at)).toLocaleString()}</p>
                                 </li>
                             );
                         })
                     : null
                     }
                 </ul>
-                <form onSubmit={handleSentMessage}>
-                    <input
-                        placeholder="Enter a message"
-                        name="message"
-                        value={messageInputValue}
-                        onChange={(e) => setMessageInputValue(e.target.value)}
-                        required
-                    >
-                    </input>
-                    <button type="submit" >Send Message</button>
-                </form>
-                <form onSubmit={handleInviteUser}>
-                    <input
-                        placeholder="Enter a User's Email"
-                        name="userToInvite"
-                        type="email"
-                        value={userToInviteEmail}
-                        onChange={(e) => setUserToInviteEmail(e.target.value)}
-                        required
-                    />
-                    <button type="submit">Invite User</button>
-                </form>
-                <Link href="/">
-                    <button>To Landing Page</button>
-                </Link>
+                <div style={{marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '25px', alignItems: 'center'}}>
+                    <form onSubmit={handleSentMessage} style={{display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center'}}>
+                        <input
+                            placeholder="Enter a message"
+                            name="message"
+                            value={messageInputValue}
+                            onChange={(e) => setMessageInputValue(e.target.value)}
+                            required
+                        >
+                        </input>
+                        <button type="submit" >Send Message</button>
+                    </form>
+                    <form onSubmit={handleInviteUser} style={{display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center'}}>
+                        <input
+                            placeholder="Enter a User's Email"
+                            name="userToInvite"
+                            type="email"
+                            value={userToInviteEmail}
+                            onChange={(e) => setUserToInviteEmail(e.target.value)}
+                            required
+                        />
+                        <button type="submit">Invite User</button>
+                    </form>
+                </div>
+                <div style={{maxHeight: 'fit-content', maxWidth: 'fit-content', marginLeft: 'auto', marginRight: 'auto'}}>
+                    <Link href="/">
+                        <button>To Landing Page</button>
+                    </Link>
+                </div>
             </div>
             : null
             }
