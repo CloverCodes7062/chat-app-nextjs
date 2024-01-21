@@ -32,13 +32,13 @@ export default function HomePage() {
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <h1 style={{ color: '#fff', textAlign: 'center' }}>Chat App Landing Page</h1>
             <div style={btnContainerStyles}>
-                <Link href="/login" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                <Link href="/login">
                     <button className={styles.btn}>Login</button>
                 </Link>
-                <Link href="/register" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                <Link href="/register">
                     <button className={styles.btn}>Register</button>
                 </Link>
-                <Link href="/viewChatrooms" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                <Link href="/viewChatrooms">
                     <button className={styles.btn}>View Chatrooms</button>
                 </Link>
                 <button className={styles.btn} onClick={handleSignOut}>Sign Out</button>

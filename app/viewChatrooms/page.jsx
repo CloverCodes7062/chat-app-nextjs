@@ -78,16 +78,14 @@ export default function ViewChatrooms() {
     return (
         <>
             {session ? 
-                <div>
-                    <h1 style={{color: '#fff'}}>View Chatrooms Page</h1>
-                    <p style={{fontSize: '16px', color: '#fff'}}>
-                    Welcome {displayName} to the View Chatrooms Page
-                    </p>
+                <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', minHeight: '100vh'}}>
+                    <h1 style={{color: '#fff', margin: 'none', padding: 'none'}}>View Chatrooms Page</h1>
+                    <div style={{marginTop: 'auto', marginBottom: 'auto'}}>
                     {roomsAllowedIn ? 
-                        <ul>
+                        <ul style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '15px', textDecoration: 'none', listStyle: 'none', margin: 'none', padding: 'none'}}>
                             {roomsAllowedIn.map((roomAllowedIn) => {
                                 return (
-                                    <li key={roomAllowedIn.room_id}>
+                                    <li key={roomAllowedIn.room_id} style={{display: 'flex', justifyContent: 'center', marginLeft: '-30px'}}>
                                         <Link href={`/chatroom/${roomAllowedIn.room_id}`}>
                                             <button>To {roomAllowedIn.chatroom_name}</button>
                                         </Link>
@@ -96,19 +94,28 @@ export default function ViewChatrooms() {
                             })}
                         </ul>
                     : null}
-                    <Link href="/">
-                        <button>Back to Landing Page</button>
-                    </Link>
-                    <form onSubmit={createNewRoom}>
-                        <input
-                            value={userCreatedChatroomName}
-                            onChange={(e) => setUserCreatedChatroomName(e.target.value)}
-                            name="userCreatedChatroomName"
-                            placeholder='Enter a Chatroom Name'
-                            required
-                        />
-                        <button type='submit'>Create a Chatroom</button>
-                    </form>
+                        <br/>
+                        <br/>
+                        <div>
+                            <form onSubmit={createNewRoom} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '15px'}}>
+                                <input
+                                    value={userCreatedChatroomName}
+                                    onChange={(e) => setUserCreatedChatroomName(e.target.value)}
+                                    name="userCreatedChatroomName"
+                                    placeholder='Enter a Chatroom Name'
+                                    required
+                                />
+                                <button type='submit'>Create a Chatroom</button>
+                            </form>
+                            <br/>
+                            <br/>
+                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                <Link href="/">
+                                    <button>Back to Landing Page</button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             : null}
         </>
