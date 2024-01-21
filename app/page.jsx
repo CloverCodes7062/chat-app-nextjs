@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { supabase } from '@/supabaseClient';
+import styles from './landingPage.module.css';
 
 export default function HomePage() {
     const handleSignOut = async () => {
@@ -23,24 +24,25 @@ export default function HomePage() {
         }
     };
 
+    const btnContainerStyles = { display: 'flex', flexDirection: 'column', 
+                                gap: '20px', marginTop: 'auto', marginBottom: 'auto', 
+                                justifyContent: 'center', alignItems: 'center' };
+
     return (
-        <div>
-            <h1 style={{color: '#fff'}}>Placeholder Landing Page</h1>
-            <p style={{fontSize: '16px', color: '#fff'}}>
-                Welcome to the placeholder landing page
-            </p>
-            <div style={{display: "flex", gap: "20px"}}>
-                <Link href="/login">
-                    <button>Login</button>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <h1 style={{ color: '#fff', textAlign: 'center' }}>Chat App Landing Page</h1>
+            <div style={btnContainerStyles}>
+                <Link href="/login" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                    <button className={styles.btn}>Login</button>
                 </Link>
-                <Link href="/register">
-                    <button>Register</button>
+                <Link href="/register" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                    <button className={styles.btn}>Register</button>
                 </Link>
-                <Link href="/viewChatrooms">
-                    <button>View Chatrooms</button>
+                <Link href="/viewChatrooms" style={{ outline: 'none', border: 'none', textDecoration: 'none' }}>
+                    <button className={styles.btn}>View Chatrooms</button>
                 </Link>
-                <button onClick={handleSignOut}>Sign Out</button>
-                <button onClick={checkSession}>Check Session</button>
+                <button className={styles.btn} onClick={handleSignOut}>Sign Out</button>
+                <button className={styles.btn} onClick={checkSession}>Check Session</button>  
             </div>
         </div>
     );

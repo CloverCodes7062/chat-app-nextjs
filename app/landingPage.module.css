@@ -1,0 +1,38 @@
+.btn {
+  align-items: center;
+  background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  box-sizing: border-box;
+  color: #FFFFFF;
+  display: flex;
+  font-size: 20px;
+  justify-content: center;
+  line-height: 1em;
+  max-width: 100%;
+  min-width: 140px;
+  padding: 19px 24px;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+.btn:hover {
+  box-shadow: 0 0 10px rgba(186, 88, 224, 0.75);
+}
+
+.btnContainer {
+  display: 'flex';
+  flex-direction: 'column';
+  gap: '20px';
+  margin-top: 'auto';
+  margin-bottom: 'auto';
+  justify-content: 'center';
+  align-items: 'center';
+}

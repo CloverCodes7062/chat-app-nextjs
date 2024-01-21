@@ -126,8 +126,12 @@ export default function Chatroom({ params }) {
             .select('id')
             .eq('user_email', userToInviteEmail);
 
-            setUserToInviteId(invitedUsersProfile[0].id);
-            console.log('invitedUsersProfile', invitedUsersProfile[0].id);
+            if (error) {
+                console.error('User not found', error);
+            } else {
+                setUserToInviteId(invitedUsersProfile[0].id);
+                console.log('invitedUsersProfile', invitedUsersProfile[0].id);
+            }
         };
 
         const inviteUserById = async () => {
