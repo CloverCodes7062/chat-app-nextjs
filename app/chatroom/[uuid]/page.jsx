@@ -90,18 +90,6 @@ export default function Chatroom({ params }) {
             console.log('roomData', roomData);
         };
 
-        if (session) {
-            const runTheseIfSession = async () => {
-                await checkAllowedIn();
-                await getUserProfile();
-                await getRoomData();
-            }
-
-            runTheseIfSession();
-        }
-    }, [session]);
-
-    useEffect(() => {
         const createRealTimeSubscription = async () => {
             console.log('createRealTime called');
             const channel = supabase
@@ -119,7 +107,8 @@ export default function Chatroom({ params }) {
 
                         setChatroomData(prevChatroomData => [...prevChatroomData, payload.new]);
 
-                        if (endOfMessagesRef.current) {
+                        if (endOfMessagesRef.current && session.user.email == payload.new.sent_by_email) {
+                            console.log(session);
                             console.log(endOfMessagesRef);
                             setTimeout(() => {
                                 endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -139,12 +128,17 @@ export default function Chatroom({ params }) {
             .subscribe()
         }
 
-        if (chatroomData && (!hasSubscribed.current)) {
-            hasSubscribed.current = true;
-            createRealTimeSubscription();
-        }
+        if (session) {
+            const runTheseIfSession = async () => {
+                await checkAllowedIn();
+                await getUserProfile();
+                await getRoomData();
+                await createRealTimeSubscription();
+            }
 
-    }, [chatroomData]);
+            runTheseIfSession();
+        }
+    }, [session]);
 
     const handleSentMessage = async (event) => {
         event.preventDefault();
