@@ -8,7 +8,6 @@ import styles from '../[uuid]/userChatroom.module.css';
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
-    const hasSubscribed = useRef(false);
     const endOfMessagesRef = useRef(null);
 
     const [chatroomData, setChatroomData] = useState([]);
