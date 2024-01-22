@@ -9,6 +9,7 @@ export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
     const hasSubscribed = useRef(false);
+    const endOfMessagesRef = useRef(null);
 
     const [chatroomData, setChatroomData] = useState([]);
     const [chatroomName, setChatroomName] = useState('');
@@ -117,6 +118,13 @@ export default function Chatroom({ params }) {
                         console.log("New Message Inserted Into DB adding to mainUl", payload.new);
 
                         setChatroomData(prevChatroomData => [...prevChatroomData, payload.new]);
+
+                        if (endOfMessagesRef.current) {
+                            console.log(endOfMessagesRef);
+                            setTimeout(() => {
+                                endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }, 100);
+                        }
                     }
 
                     if ((payload.eventType == "DELETE") && (payload.old.room_id == uuid)) {
@@ -212,8 +220,12 @@ export default function Chatroom({ params }) {
         }
     }
 
-    const handleDelMessageAnimationEnd = (message_id) => {
-        setChatroomData(prevChatroomData => prevChatroomData.filter(message => message.message_id !== message_id));
+    const handleAnimationEnd = (event, message_id) => {
+        const animationName = event.animationName;
+
+        if (animationName == "fadeOut") {
+            setChatroomData(prevChatroomData => prevChatroomData.filter(message => message.message_id !== message_id));
+        }
     }
 
     return (
@@ -225,8 +237,8 @@ export default function Chatroom({ params }) {
                     {chatroomData.map((message) => {
                         return (
                             <li 
-                            className={(message.sent_by_email == session.user.email) ? `${styles.sentMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}` : `${styles.receivedMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}`} 
-                            onAnimationEnd={() => handleDelMessageAnimationEnd(message.message_id)} 
+                            className={`animate__animated animate__fadeIn ${message.sent_by_email == session.user.email? `${styles.sentMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}` : `${styles.receivedMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}`}`}
+                            onAnimationEnd={(event) => handleAnimationEnd(event, message.message_id)} 
                             key={message.message_id}>
                                 {(message.sent_by_email == session.user.email) ? <button onClick={(event) => handleDeleteChatMessage(event, message.message_id)} style={{position: 'absolute', top: '10px', left: '10px', padding: '10px'}}>Delete</button> : null}
                                 <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
@@ -235,6 +247,7 @@ export default function Chatroom({ params }) {
                             </li>
                         );
                     })}
+                    <div ref={endOfMessagesRef} style={{ height: '1px', opacity: 0 }}></div>
                 </ul>
                 <div style={{marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '25px', alignItems: 'center'}}>
                     <form onSubmit={handleSentMessage} style={{display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center'}}>
