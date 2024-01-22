@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +8,8 @@ import styles from '../[uuid]/userChatroom.module.css';
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
     const router = useRouter();
+    const hasSubscribed = useRef(false);
+
     const [chatroomData, setChatroomData] = useState([]);
     const [chatroomName, setChatroomName] = useState('');
 
@@ -88,11 +90,53 @@ export default function Chatroom({ params }) {
         };
 
         if (session) {
-            checkAllowedIn();
-            getUserProfile();
-            getRoomData();
+            const runTheseIfSession = async () => {
+                await checkAllowedIn();
+                await getUserProfile();
+                await getRoomData();
+            }
+
+            runTheseIfSession();
         }
     }, [session]);
+
+    useEffect(() => {
+        const createRealTimeSubscription = async () => {
+            console.log('createRealTime called');
+            const channel = supabase
+            .channel('messages_db_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'messages',
+                },
+                (payload) => {
+                    if ((payload.eventType == "INSERT") && (payload.new.room_id == uuid)) {
+                        console.log("New Message Inserted Into DB adding to mainUl", payload.new);
+
+                        setChatroomData(prevChatroomData => [...prevChatroomData, payload.new]);
+                    }
+
+                    if ((payload.eventType == "DELETE") && (payload.old.room_id == uuid)) {
+                        console.log("Message Deleted From DB", payload.old.message_id);
+                        
+                        setChatroomData(prevChatroomData => prevChatroomData.map((message) => {
+                            return (message.message_id == payload.old.message_id ? {...message, isDeleting: true} : message)
+                        }));
+                    }
+                }
+            )
+            .subscribe()
+        }
+
+        if (chatroomData && (!hasSubscribed.current)) {
+            hasSubscribed.current = true;
+            createRealTimeSubscription();
+        }
+
+    }, [chatroomData]);
 
     const handleSentMessage = async (event) => {
         event.preventDefault();
@@ -168,25 +212,29 @@ export default function Chatroom({ params }) {
         }
     }
 
+    const handleDelMessageAnimationEnd = (message_id) => {
+        setChatroomData(prevChatroomData => prevChatroomData.filter(message => message.message_id !== message_id));
+    }
+
     return (
         <>
             {(session && allowedIn) ? 
             <div className={styles.mainSection}>
                 <h1 style={{color: '#fff', textAlign: 'center', margin: '0', padding: '0', marginTop: '-15px'}}>Welcome to {chatroomName}</h1> 
                 <ul className={styles.mainUl}>
-                    {chatroomData ? 
-                        chatroomData.map((message) => {
-                            return (
-                                <li className={(message.sent_by_email == session.user.email) ? `${styles.sentMessage} ${styles.chatMessage}` : `${styles.receivedMessage} ${styles.chatMessage}`} key={message.message_id}>
-                                    {(message.sent_by_email == session.user.email) ? <button onClick={(event) => handleDeleteChatMessage(event, message.message_id)} style={{position: 'absolute', top: '10px', left: '10px', padding: '10px'}}>Delete</button> : null}
-                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
-                                    <p style={{fontSize: '18px', color: '#fff'}}>{message.content}</p>
-                                    <p style={{fontSize: '18px', color: '#fff', position: 'absolute', top: '20px', right: '20px'}}>{(new Date(message.created_at)).toLocaleString()}</p>
-                                </li>
-                            );
-                        })
-                    : null
-                    }
+                    {chatroomData.map((message) => {
+                        return (
+                            <li 
+                            className={(message.sent_by_email == session.user.email) ? `${styles.sentMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}` : `${styles.receivedMessage} ${styles.chatMessage} ${message.isDeleting ? "animate__animated animate__fadeOut" : ""}`} 
+                            onAnimationEnd={() => handleDelMessageAnimationEnd(message.message_id)} 
+                            key={message.message_id}>
+                                {(message.sent_by_email == session.user.email) ? <button onClick={(event) => handleDeleteChatMessage(event, message.message_id)} style={{position: 'absolute', top: '10px', left: '10px', padding: '10px'}}>Delete</button> : null}
+                                <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
+                                <p style={{fontSize: '18px', color: '#fff'}}>{message.content}</p>
+                                <p style={{fontSize: '18px', color: '#fff', position: 'absolute', top: '20px', right: '20px'}}>{(new Date(message.created_at)).toLocaleString()}</p>
+                            </li>
+                        );
+                    })}
                 </ul>
                 <div style={{marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '25px', alignItems: 'center'}}>
                     <form onSubmit={handleSentMessage} style={{display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center'}}>
