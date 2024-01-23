@@ -4,6 +4,7 @@ import { supabase } from "@/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from '../[uuid]/userChatroom.module.css';
+import Meeting from "@/app/components/Meeting";
 
 export default function Chatroom({ params }) {
     const uuid = params.uuid;
@@ -271,6 +272,7 @@ export default function Chatroom({ params }) {
                         <button>To Landing Page</button>
                     </Link>
                 </div>
+                <Meeting />
             </div>
             : null
             }

@@ -9,7 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dytesdk/react-ui-kit": "^1.62.1",
+    "@dytesdk/react-web-core": "^1.35.17",
     "@supabase/supabase-js": "^2.39.3",
+    "agora-extension-ai-denoiser": "^1.1.0",
+    "agora-extension-spatial-audio": "^1.0.0-beta1",
+    "agora-extension-virtual-background": "^1.2.0",
+    "agora-rtc-react": "^2.1.0",
+    "agora-rtc-sdk-ng": "^4.20.0",
     "animate.css": "^4.1.1",
     "next": "14.0.4",
     "next-auth": "^5.0.0-beta.5",
