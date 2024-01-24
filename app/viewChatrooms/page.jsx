@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/supabaseClient';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,8 @@ export default function ViewChatrooms() {
     const [roomsAllowedIn, setRoomsAllowedIn] = useState([]);
 
     const [userCreatedChatroomName, setUserCreatedChatroomName] = useState('');
+
+    const hasRan = useRef(false);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -59,20 +61,57 @@ export default function ViewChatrooms() {
                 console.log('chatrooms', chatrooms);
             }
 
+            const createRealTimeSubscription = async () => {
+                console.log('createRealTime called');
+                if (!hasRan.current) {
+                    hasRan.current = true;
+                    const channel = supabase
+                    .channel('chatrooms_db_changes')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: '*',
+                            schema: 'public',
+                            table: 'chatrooms',
+                        },
+                        (payload) => {
+                            if (payload.eventType == "INSERT") {
+                                if (payload.new.users_allowed_in.includes(session.user.id)) {
+                                    setRoomsAllowedIn(previousRooms => [...previousRooms, { room_id: payload.new.room_id, chatroom_name: payload.new.chatroom_name }])
+                                }
+                            }
+                        }
+                    )
+                    .subscribe()
+
+                    console.log('subscription created');
+                }
+            }
+
             getRoomsAllowedin();
 
             getUserProfile();
+
+            createRealTimeSubscription();
         }
     }, [session]);
 
-    const createNewRoom = async () => {
+    const createNewRoom = async (event) => {
+        event.preventDefault();
+
+        const response = await fetch(`/api/getMeetingId?userCreatedChatroomName=${userCreatedChatroomName}`);
+        const data = await response.json();
+
         const { error } = await supabase
         .from('chatrooms')
-        .insert({ created_by: session.user.id, chatroom_name: userCreatedChatroomName, users_allowed_in: [session.user.id] })
+        .insert({ created_by: session.user.id, chatroom_name: userCreatedChatroomName, users_allowed_in: [session.user.id], meeting_id: data.id })
 
         if (error) {
             console.log('Error Inserting New Room', error);
         }
+
+        setUserCreatedChatroomName('');
+
     };
 
     return (
@@ -97,7 +136,7 @@ export default function ViewChatrooms() {
                         <br/>
                         <br/>
                         <div>
-                            <form onSubmit={createNewRoom} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '15px'}}>
+                            <form onSubmit={(event) => createNewRoom(event)} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '15px'}}>
                                 <input
                                     value={userCreatedChatroomName}
                                     onChange={(e) => setUserCreatedChatroomName(e.target.value)}
