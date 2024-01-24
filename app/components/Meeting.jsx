@@ -4,34 +4,34 @@ import { DyteMeeting } from "@dytesdk/react-ui-kit";
 import { useDyteClient, DyteProvider } from "@dytesdk/react-web-core";
 import { v4 as uuidv4 } from 'uuid';
 
-export default function Meeting() {
+export default function Meeting({ meetingId }) {
     const [meeting, initMeeting] = useDyteClient();
     const [participantName, setParticipantName] = useState('');
 
-    const meetingId = 'bbb1400d-b51a-4fc1-8ddf-44cd111bcade';
     const basicAuth = Buffer.from(process.env.NEXT_PUBLIC_DYTE_ORGANIZATION_ID + ":" + process.env.NEXT_PUBLIC_DYTE_API_KEY).toString('base64');
 
-
     const handleJoinMeeting = async () => {
-        try {
-            const response = await fetch(`/api/getParticipantToken?meetingId=${meetingId}&participantName=${participantName}&participantId=${uuidv4()}`);
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log(data);
-                const authToken = data.token;
-
-                initMeeting({
-                    authToken: authToken,
-                    defaults: {
-                        audio: false,
-                        video: false,
-                    },
-                });
+        if (meetingId) {
+            try {
+                const response = await fetch(`/api/getParticipantToken?meetingId=${meetingId}&participantName=${participantName}&participantId=${uuidv4()}`);
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log(data);
+                    const authToken = data.token;
+    
+                    initMeeting({
+                        authToken: authToken,
+                        defaults: {
+                            audio: false,
+                            video: false,
+                        },
+                    });
+                }
+    
+            } catch (error) {
+                console.log('Failed to joinMeeting', error);
             }
-
-        } catch (error) {
-            console.log('Failed to joinMeeting', error);
         }
     }
 

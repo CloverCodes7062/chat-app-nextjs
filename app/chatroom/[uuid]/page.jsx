@@ -26,6 +26,8 @@ export default function Chatroom({ params }) {
     const [userToInviteEmail, setUserToInviteEmail] = useState('');
     const [userToInviteId, setUserToInviteId] = useState('');
 
+    const [meetingId, setMeetingId] = useState('');
+
     useEffect(() => {
         const checkSession = async () => {
             const { data, error } = await supabase.auth.getSession();
@@ -51,7 +53,7 @@ export default function Chatroom({ params }) {
         const checkAllowedIn = async () => {
             const { data: chatroom, error } = await supabase
             .from('chatrooms')
-            .select('users_allowed_in, chatroom_name')
+            .select('users_allowed_in, chatroom_name, meeting_id')
             .eq('room_id', uuid)
             
             if (!chatroom) {
@@ -59,6 +61,7 @@ export default function Chatroom({ params }) {
             }
 
             console.log('chatroom', chatroom);
+            setMeetingId(chatroom[0].meeting_id);
 
             if (chatroom[0].users_allowed_in.includes(session.user.id)) {
                 setAllowedIn(true);
@@ -272,7 +275,7 @@ export default function Chatroom({ params }) {
                         <button>To Landing Page</button>
                     </Link>
                 </div>
-                <Meeting />
+                <Meeting meetingId={meetingId} />
             </div>
             : null
             }
