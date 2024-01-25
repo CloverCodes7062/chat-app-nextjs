@@ -29,8 +29,8 @@ export default function RootLayout({ children }) {
                 <p className={styles.navBarP} onClick={handleMenuClick}>&#9776;</p>
                 {renderNav ?
                 <nav className={navClass} style={{ width: 'fit-content', height: 'fit-content', position: 'absolute', top: '8vh', right: '1vw', display: 'flex', flexDirection: 'column', gap: '15px'}}>
-                    <a href='/register' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto' }}><button>Register</button></a>
-                    <a href='/viewChatrooms' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto' }}><button>View Chatrooms</button></a>
+                    <a href='/register' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Register</button></a>
+                    <a href='/viewChatrooms' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>View Chatrooms</button></a>
                 </nav>
                 : null}
                 {children}

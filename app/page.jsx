@@ -29,20 +29,36 @@ export default function HomePage() {
                                 justifyContent: 'center', alignItems: 'center' };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <h1 style={{ color: '#fff', textAlign: 'center' }}>Chat App Landing Page</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '12.5px' }}>
+            <div className={styles.horizontalNavBar}>
+                <h1 style={{ margin: 0, marginLeft: '75px', color: '#fff', padding: 0, fontWeight: 'bolder' }}>Clover's Chat App</h1>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', height: '100%', position: 'absolute', gap: '50px' }}>
+                    <Link href='/'>
+                        <button>Home</button>
+                    </Link>
+                    <Link href='/home'>
+                        <button>Home</button>
+                    </Link>
+                    <Link href='/home'>
+                        <button>Home</button>
+                    </Link>
+                    <Link href='/home'>
+                        <button>Home</button>
+                    </Link>
+                </div>
+            </div>
             <div style={btnContainerStyles}>
                 <Link href="/login">
-                    <button className={styles.btn}>Login</button>
+                    <button>Login</button>
                 </Link>
                 <Link href="/register">
-                    <button className={styles.btn}>Register</button>
+                    <button>Register</button>
                 </Link>
                 <Link href="/viewChatrooms">
-                    <button className={styles.btn}>View Chatrooms</button>
+                    <button>View Chatrooms</button>
                 </Link>
-                <button className={styles.btn} onClick={handleSignOut}>Sign Out</button>
-                <button className={styles.btn} onClick={checkSession}>Check Session</button>  
+                <button onClick={handleSignOut}>Sign Out</button>
+                <button onClick={checkSession}>Check Session</button>  
             </div>
         </div>
     );
