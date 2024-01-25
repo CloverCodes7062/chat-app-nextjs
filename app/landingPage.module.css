@@ -1,9 +1,10 @@
-.btnContainer {
-  display: 'flex';
-  flex-direction: 'column';
-  gap: '20px';
-  margin-top: 'auto';
-  margin-bottom: 'auto';
-  justify-content: 'center';
-  align-items: 'center';
+.navBarP {
+  font-size: 45px;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0.1vh;
+  right: 0.5vw;
+  cursor: pointer;
 }

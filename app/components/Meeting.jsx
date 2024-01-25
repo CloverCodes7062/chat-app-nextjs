@@ -1,14 +1,12 @@
 'use client';
-import React, { useEffect, useState } from "react";
-import { DyteMeeting } from "@dytesdk/react-ui-kit";
+import React, { useEffect, useRef, useState } from "react";
+import { DyteGrid, DyteMeeting, DyteMicToggle } from "@dytesdk/react-ui-kit";
 import { useDyteClient, DyteProvider } from "@dytesdk/react-web-core";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Meeting({ meetingId }) {
     const [meeting, initMeeting] = useDyteClient();
     const [participantName, setParticipantName] = useState('');
-
-    const basicAuth = Buffer.from(process.env.NEXT_PUBLIC_DYTE_ORGANIZATION_ID + ":" + process.env.NEXT_PUBLIC_DYTE_API_KEY).toString('base64');
 
     const handleJoinMeeting = async () => {
         if (meetingId) {
@@ -25,8 +23,12 @@ export default function Meeting({ meetingId }) {
                         defaults: {
                             audio: false,
                             video: false,
+                            screenShare: {
+                                displaySurface: 'window',
+                            }
                         },
                     });
+
                 }
     
             } catch (error) {
@@ -37,11 +39,8 @@ export default function Meeting({ meetingId }) {
 
     return (
         <>
-            {meeting ? 
-            (<div>
-                <h1>Meeting Found</h1>
-                <DyteMeeting mode="fill" meeting={meeting}/>
-            </div>)
+            {meeting ?
+            (<DyteMeeting meeting={meeting}></DyteMeeting>)
             : 
             (<div>
                 <h1>Join a Meeting</h1>

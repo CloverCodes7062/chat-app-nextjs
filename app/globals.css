@@ -2,7 +2,6 @@ body {
     position: relative;
     display: flex;
     justify-content: center;
-    padding: 25px;
     min-height: 100vh;
     background: url('../images/img.jpg') no-repeat;
     background-size: cover;
@@ -57,4 +56,11 @@ input {
     font-weight: bold;
     font-size: 14px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+}
+
+dyte-meeting {
+    position: unset;
+    height: 480px;
+    margin-top: 25px;
+    border-radius: 15px;
 }
