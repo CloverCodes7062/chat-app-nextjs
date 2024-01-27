@@ -68,6 +68,50 @@ export default function DirectMessaging() {
 
     }, [session]);
 
+    useEffect(() => {
+        const createRealTimeSubscription = async () => {
+            console.log('createRealTimeSubscription called');
+            const channel = supabase
+            .channel('direct_messages_db_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'direct_messages',
+                },
+                (payload) => {
+                    console.log('payload', payload);
+
+                    if (currentlyViewFriend) {
+                        console.log('currentlyViewFriend', currentlyViewFriend);
+                        
+                        console.log('currentlyViewFriend.friendsUuid', currentlyViewFriend.friendsUuid);
+                        if (payload.eventType == "INSERT" && payload.new.sent_from_uuid == session.user.id && payload.new.sent_to_uuid == currentlyViewFriend.friendsUuid) {
+                            console.log("Detecting that you've sent a message");
+                            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => [...prevMessages, payload.new])
+                        }
+
+                        if (payload.eventType == "INSERT" && payload.new.sent_from_uuid == currentlyViewFriend.friendsUuid && payload.new.sent_to_uuid == session.user.id) {
+                            console.log("Detecting that you've received a message");
+                            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => [...prevMessages, payload.new])
+                        }
+
+                        if (payload.eventType == "DELETE") {
+                            console.log('Deleting Message in Real Time');
+                            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => prevMessages.filter(message => message.message_id !== payload.old.message_id));
+                        }
+                    }
+                }
+            )
+            .subscribe()
+        }
+
+        if (currentlyViewFriend) {
+            createRealTimeSubscription();
+        }
+    }, [currentlyViewFriend]);
+
     const handleFriendClicked = async ({ friendsEmail, friendsUuid, friendsName }) => {
         console.log('friend clicked', friendsUuid, friendsEmail, friendsName);
         setCurrentlyViewFriend({ friendsEmail, friendsUuid, friendsName });
@@ -148,16 +192,14 @@ export default function DirectMessaging() {
                                         <h3>{message.sent_from_uuid == session.user.id ? `${usersProfile.display_name}`: `${currentlyViewFriend.friendsName}`}</h3>
                                         <p>{message.message}</p>
                                     </div>
-                                    <div style={{ top: '10px', right: '25px', position: 'absolute', display: 'flex', gap: '10px' }}>
-                                        {message.sent_from_uuid == session.user.id ?
-                                        <button className={styles.deleteMessageBtn} onClick={(event) => handleDelMessageClick(event, message.message_id)}>
-                                            Delete
-                                        </button>
-                                        : null}
-                                        <p style={{ padding: '0', margin: '0' }}>
-                                            {(new Date(message.created_at)).toLocaleString()}
-                                        </p>
-                                    </div>
+                                    {message.sent_from_uuid == session.user.id ?
+                                    <button className={styles.deleteMessageBtn} onClick={(event) => handleDelMessageClick(event, message.message_id)}>
+                                        Delete
+                                    </button>
+                                    : null}
+                                    <p style={{ padding: '0', margin: '0', position: 'absolute', top: '10px', right: '75px' }}>
+                                        {(new Date(message.created_at)).toLocaleString()}
+                                    </p>
                                 </li>
                             );
                         })}

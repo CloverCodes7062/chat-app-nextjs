@@ -28,4 +28,7 @@
     min-width: unset;
     padding: 5px;
     font-size: 16px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
 }
