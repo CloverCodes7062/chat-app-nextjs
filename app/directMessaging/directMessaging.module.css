@@ -1,0 +1,31 @@
+.sentMessageIcon path { 
+    color: #000000; 
+}
+
+.chatMessage {
+    position: relative;
+    font-size: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border-radius: 16px;
+    min-height: 100px;
+    margin-bottom: 20px;
+}
+
+.receivedMessage {
+    background-color: rgb(51,10,105);
+}
+
+.sentMessage {
+    background-color: rgb(155,74,206);
+}
+
+.deleteMessageBtn { 
+    background-color: rgb(175, 0, 0) !important;
+    background-image: unset;
+    height: fit-content;
+    width: fit-content;
+    max-width: unset;
+    min-width: unset;
+    padding: 5px;
+    font-size: 16px;
+}

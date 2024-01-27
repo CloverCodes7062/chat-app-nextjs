@@ -28,9 +28,10 @@ export default function RootLayout({ children }) {
             <body>
                 <p className={styles.navBarP} onClick={handleMenuClick}>&#9776;</p>
                 {renderNav ?
-                <nav className={navClass} style={{ width: 'fit-content', height: 'fit-content', position: 'absolute', top: '8vh', right: '1vw', display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                <nav className={navClass} style={{ width: 'fit-content', height: 'fit-content', position: 'absolute', top: '1vh', right: '3vw', display: 'flex', gap: '15px'}}>
                     <a href='/register' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Register</button></a>
                     <a href='/viewChatrooms' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>View Chatrooms</button></a>
+                    <a href='/directMessaging' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Send a Direct Message</button></a>
                 </nav>
                 : null}
                 {children}

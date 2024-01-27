@@ -36,13 +36,13 @@ export default function HomePage() {
                     <Link href='/'>
                         <button>Home</button>
                     </Link>
-                    <Link href='/home'>
+                    <Link href='/'>
                         <button>Home</button>
                     </Link>
-                    <Link href='/home'>
+                    <Link href='/'>
                         <button>Home</button>
                     </Link>
-                    <Link href='/home'>
+                    <Link href='/'>
                         <button>Home</button>
                     </Link>
                 </div>
