@@ -22,6 +22,8 @@ export default function DirectMessaging() {
 
     const [messageInputValue, setMessageInputValue] = useState('');
 
+    const [friendRequestEmailValue, setFriendRequestEmailValue] = useState('');
+
     const endOfMessagesRef = useRef(null);
 
     const router = useRouter();
@@ -267,9 +269,29 @@ export default function DirectMessaging() {
         await updatePendingFriendRequestsFriends();
     }
 
+    const handleSendingFriendRequest = async (event) => {
+        event.preventDefault();
+
+        console.log('friendRequestEmailValue', friendRequestEmailValue);
+
+        const { data: pendingFriends, error } = await supabase
+        .from('profiles')
+        .select('pending_friend_requests')
+        .eq('user_email', friendRequestEmailValue)
+
+        const updatedPendingFriends = [...(pendingFriends[0].pending_friend_requests || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id }];
+
+        const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ pending_friend_requests: updatedPendingFriends })
+        .eq('user_email', friendRequestEmailValue);
+
+        setFriendRequestEmailValue('');
+    };
+
     return (
         <div style={{ width: '99dvw', height: '99dvh' }}>
-            {usersFriends ?
+            {(usersFriends || session) ?
             <div style={{ display: 'grid', gridTemplateColumns: '400px auto', width: '100%', height: '100%' }}>
                 <div>
                     <div style={{ display: 'flex', gap: '20px' }}>
@@ -286,19 +308,46 @@ export default function DirectMessaging() {
                             Pending Friend Requests
                         </h2>
                     </div>
+                    <form onSubmit={(event) => handleSendingFriendRequest(event)} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                        <input 
+                            placeholder="Enter a User's Email"
+                            style={{ paddingRight: '50px' }}
+                            type="email"
+                            value={friendRequestEmailValue}
+                            onChange={(e) => setFriendRequestEmailValue(e.target.value)}
+                            required
+                        />
+                        <button style={{
+                            minWidth: 'unset',
+                            padding: '10px',
+                            position: 'absolute',
+                            right: '0',
+                            top: '0',
+                            height: '100%',
+                            border: 'none',
+                            borderRadius: '15px',
+                            background: 'none',
+                            cursor: 'pointer',
+                            width: 'fit-content',
+                            backgroundColor: '#fff',
+                            boxShadow: 'unset'
+                        }}>
+                            <FontAwesomeIcon icon={faPaperPlane} className={styles.sentMessageIcon} />
+                        </button>
+                    </form>
                     {renderUsersFriends ? 
                     <ul>
-                        {usersFriends.map((friend, index) => {
+                        {usersFriends ? usersFriends.map((friend, index) => {
                             return (
                                 <li key={index} style={{ width: 'fit-content', position: 'relative' }}>
                                     <p onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer', width: 'fit-content' }}>{friend.display_name}</p>
                                 </li>
                             );
-                        })}
+                        }) : null}
                     </ul>
                     : 
                     <ul>
-                        {usersPendingFriendRequests.map((pendingFriend, index) => {
+                        {usersPendingFriendRequests ? usersPendingFriendRequests.map((pendingFriend, index) => {
                             return (
                                 <li key={index} style={{ width: 'fit-content' }}>
                                     <p style={{ cursor: 'pointer', width: 'fit-content' }} onMouseEnter={(event) => handlePendingFriendHover(event)}>{pendingFriend.display_name}</p>
@@ -308,7 +357,7 @@ export default function DirectMessaging() {
                                     </div>
                                 </li>
                             );
-                        })}
+                        }) : null}
                     </ul>
                     }
                 </div>
@@ -366,20 +415,6 @@ export default function DirectMessaging() {
                 : null}
             </div>
             : null}
-            {/* usersPendingFriendRequests ? 
-            <div>
-                <h1>Pending Friend Requests</h1>
-                <ul>
-                    {usersPendingFriendRequests.map((pendingFriendRequest) => {
-                        return (
-                            <li>
-                                <p style={{ cursor: 'pointer' }}>{pendingFriendRequest.email}</p>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-            : null */}
         </div>
     );
 }
