@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,9 @@ export default function DirectMessaging() {
     const [usersFriends, setUsersFriends] = useState([]);
     const [usersPendingFriendRequests, setUsersPendingFriendRequests] = useState([]);
     
+    const [renderUsersFriends, setRenderUsersFriends] = useState(true);
+    const [renderPendingFriends, setRenderPendingFriends] = useState(false);
+
     const [usersProfile, setUsersProfile] = useState(null);
     const [session, setSession] = useState(null);
 
@@ -18,6 +21,8 @@ export default function DirectMessaging() {
     const [currentlyViewFriendMessagesSentToAndFrom, setCurrentlyViewFriendMessagesSentToAndFrom] = useState([]);
 
     const [messageInputValue, setMessageInputValue] = useState('');
+
+    const endOfMessagesRef = useRef(null);
 
     const router = useRouter();
 
@@ -90,6 +95,12 @@ export default function DirectMessaging() {
                         if (payload.eventType == "INSERT" && payload.new.sent_from_uuid == session.user.id && payload.new.sent_to_uuid == currentlyViewFriend.friendsUuid) {
                             console.log("Detecting that you've sent a message");
                             setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => [...prevMessages, payload.new])
+
+                            if (endOfMessagesRef.current) {
+                                setTimeout(() => {
+                                    endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }, 100);
+                            }
                         }
 
                         if (payload.eventType == "INSERT" && payload.new.sent_from_uuid == currentlyViewFriend.friendsUuid && payload.new.sent_to_uuid == session.user.id) {
@@ -98,8 +109,11 @@ export default function DirectMessaging() {
                         }
 
                         if (payload.eventType == "DELETE") {
-                            console.log('Deleting Message in Real Time');
-                            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => prevMessages.filter(message => message.message_id !== payload.old.message_id));
+                            console.log("Message Deleted From DB", payload.old.message_id);
+                            
+                            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => prevMessages.map((message) => {
+                                return (message.message_id == payload.old.message_id ? {...message, isDeleting: true} : message)
+                            }));
                         }
                     }
                 }
@@ -117,13 +131,6 @@ export default function DirectMessaging() {
         setCurrentlyViewFriend({ friendsEmail, friendsUuid, friendsName });
 
         const getMessagesSentFromAndToCurrFriend = async () => {
-            const rawSQL = `
-            SELECT * FROM direct_messages
-            WHERE 
-                (sent_to_uuid = '${session.user.id}' AND sent_from_uuid = '${friendsUuid}')
-                OR
-                (sent_to_uuid = '${friendsUuid}' AND sent_from_uuid = '${session.user.id}')
-            `;
 
             const { data: sentFromAndToCurrFriend, error } = await supabase
                 .rpc('get_messages_between_users', { user_id: session.user.id, friend_id: friendsUuid })
@@ -165,21 +172,145 @@ export default function DirectMessaging() {
         .eq('message_id', messageId)
     };
 
+    
+    const handleAnimationEnd = async (event, message_id) => {
+        const animationName = event.animationName;
+
+        if (animationName == "fadeOut") {
+            setCurrentlyViewFriendMessagesSentToAndFrom(prevMessages => prevMessages.filter(message => message.message_id !== message_id));
+        }
+    }
+
+    const handlePendingFriendHover = async (event) => {
+        console.log('Pending Friend Hovered Over', event.target);
+    }
+
+    const handleAcceptFriendRequest = async ({ pendingFriendsUuid, pendingFriendsEmail, pendingFriendsDisplayName }) => {
+        console.log('Accepting Friend Request', pendingFriendsUuid, pendingFriendsEmail, pendingFriendsDisplayName);
+
+        console.log('usersProfile', usersProfile);
+
+        const updateCurrentUsersFriends = async () => {
+            const { data: currentFriends, error: currentFriendsError } = await supabase
+            .from('profiles')
+            .select('friends')
+            .eq('id', session.user.id)
+        
+            if (currentFriendsError) {
+                console.error(currentFriendsError);
+            }
+    
+            console.log(currentFriends[0].friends);
+            const updatedCurrentFriends = [...(currentFriends[0].friends || []), { display_name: pendingFriendsDisplayName, email: pendingFriendsEmail, uuid: pendingFriendsUuid }];
+            console.log('updated currentFriends', updatedCurrentFriends);
+    
+            const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ friends: updatedCurrentFriends })
+            .eq('id', session.user.id);
+    
+            if (updateError) {
+                console.error(updateError);
+            }
+        }
+
+        const updateCurrentUsersPendingFriends = async () => {
+            const { data: pendingFriends, error: pendingFriendsError } = await supabase
+            .from('profiles')
+            .select('pending_friend_requests')
+            .eq('id', session.user.id)
+    
+            if (pendingFriendsError) {
+                console.error(pendingFriendsError);
+            }
+    
+            console.log(pendingFriends[0].pending_friend_requests);
+            const updatedPendingFriends = pendingFriends[0].pending_friend_requests.filter(pendingFriend => pendingFriend.uuid != pendingFriendsUuid);
+            console.log('updated pendingFriends', updatedPendingFriends);
+
+            const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ pending_friend_requests: updatedPendingFriends })
+            .eq('id', session.user.id);
+    
+            if (updateError) {
+                console.error(updateError);
+            }
+        }
+
+        const updatePendingFriendRequestsFriends = async () => {
+            const { data: pendingFriendRequestFriends, error: pendingFriendRequestError } = await supabase
+            .from('profiles')
+            .select('friends')
+            .eq('id', pendingFriendsUuid)
+
+            if (pendingFriendRequestError) {
+                console.error(pendingFriendRequestError);
+            }
+
+            console.log(pendingFriendRequestFriends[0].friends);
+            const updatedPendingFriendRequestFriends = [...(pendingFriendRequestFriends[0].friends || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id }];
+            console.log('updated pendingFriendRequestFriends', updatedPendingFriendRequestFriends);
+
+            const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ friends: updatedPendingFriendRequestFriends })
+            .eq('id', pendingFriendsUuid);
+    
+            if (updateError) {
+                console.error(updateError);
+            }
+        }
+
+        await updateCurrentUsersFriends();
+        await updateCurrentUsersPendingFriends();
+        await updatePendingFriendRequestsFriends();
+    }
+
     return (
         <div style={{ width: '99dvw', height: '99dvh' }}>
             {usersFriends ?
-            <div style={{ display: 'grid', gridTemplateColumns: '300px auto', width: '100%', height: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '400px auto', width: '100%', height: '100%' }}>
                 <div>
-                    <h1>Friends</h1>
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <h2 
+                            style={{ cursor: 'pointer' }} 
+                            onClick={() => setRenderUsersFriends(true)}
+                        >
+                            Friends
+                        </h2>
+                        <h2 
+                            style={{ cursor: 'pointer'}} 
+                            onClick={() => setRenderUsersFriends(false)}
+                        >
+                            Pending Friend Requests
+                        </h2>
+                    </div>
+                    {renderUsersFriends ? 
                     <ul>
                         {usersFriends.map((friend, index) => {
                             return (
-                                <li key={index}>
-                                    <p onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer' }}>{friend.email}</p>
+                                <li key={index} style={{ width: 'fit-content', position: 'relative' }}>
+                                    <p onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer', width: 'fit-content' }}>{friend.display_name}</p>
                                 </li>
                             );
                         })}
                     </ul>
+                    : 
+                    <ul>
+                        {usersPendingFriendRequests.map((pendingFriend, index) => {
+                            return (
+                                <li key={index} style={{ width: 'fit-content' }}>
+                                    <p style={{ cursor: 'pointer', width: 'fit-content' }} onMouseEnter={(event) => handlePendingFriendHover(event)}>{pendingFriend.display_name}</p>
+                                    <div>
+                                        <button onClick={() => handleAcceptFriendRequest({ pendingFriendsUuid: pendingFriend.uuid, pendingFriendsEmail: pendingFriend.email, pendingFriendsDisplayName: pendingFriend.display_name })}>Accept</button>
+                                        <button>Decline</button>
+                                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    }
                 </div>
                 {currentlyViewFriend ? 
                 (<div style={{ display: 'grid', paddingLeft: '10px', gridTemplateRows: 'fit-content(100%) 1fr fit-content(100%)', overflow: 'hidden' }}>
@@ -187,7 +318,7 @@ export default function DirectMessaging() {
                     <ul style={{ overflowY: 'auto', maxHeight: '85vh', marginTop: 'auto', listStyle: 'none', padding: '0' }}>
                         {currentlyViewFriendMessagesSentToAndFrom.map((message, index) => {
                             return (
-                                <li key={index} style={{ display: 'flex', alignItems: 'center', paddingLeft: '25px', paddingRight: '25px', position: 'relative' }} className={message.sent_from_uuid == session.user.id ? `${styles.chatMessage} ${styles.sentMessage}` : `${styles.chatMessage} ${styles.receivedMessage}`}>
+                                <li key={index} style={{ display: 'flex', alignItems: 'center', paddingLeft: '25px', paddingRight: '25px', position: 'relative' }} className={message.sent_from_uuid == session.user.id ? `${message.isDeleting ? "animate__animated animate__fadeOut" : ""} animate__animated animate__fadeIn ${styles.chatMessage} ${styles.sentMessage}` : `${message.isDeleting ? "animate__animated animate__fadeOut" : ""} animate__animated animate__fadeIn ${styles.chatMessage} ${styles.receivedMessage}`} onAnimationEnd={(event) => handleAnimationEnd(event, message.message_id)}>
                                     <div>
                                         <h3>{message.sent_from_uuid == session.user.id ? `${usersProfile.display_name}`: `${currentlyViewFriend.friendsName}`}</h3>
                                         <p>{message.message}</p>
@@ -203,6 +334,7 @@ export default function DirectMessaging() {
                                 </li>
                             );
                         })}
+                        <div ref={endOfMessagesRef} style={{ height: '1px', opacity: 0 }}></div>
                     </ul>
                     <form onSubmit={(event) => handleSendMessage(event)} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                         <input 
