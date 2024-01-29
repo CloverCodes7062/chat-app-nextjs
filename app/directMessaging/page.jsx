@@ -294,15 +294,16 @@ export default function DirectMessaging() {
             {(usersFriends || session) ?
             <div style={{ display: 'grid', gridTemplateColumns: '400px auto', width: '100%', height: '100%' }}>
                 <div className={styles.section}>
-                    <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '20px' }}>
                         <h2 
-                            style={{ cursor: 'pointer' }} 
+                            className={styles.directMessagingH2}
                             onClick={() => setRenderUsersFriends(true)}
                         >
                             Friends
                         </h2>
+                        <div style={{ width: '2px', height: '100%', borderRight: '2px solid rgba(255, 255, 255, .2)' }}/>
                         <h2 
-                            style={{ cursor: 'pointer'}} 
+                            className={styles.directMessagingH2}
                             onClick={() => setRenderUsersFriends(false)}
                         >
                             Pending Friend Requests
@@ -336,10 +337,10 @@ export default function DirectMessaging() {
                         </button>
                     </form>
                     {renderUsersFriends ? 
-                    <ul style={{ width: '100%' }}>
+                    <ul style={{ width: '100%', margin: 0, padding: 0, marginTop: '15px' }}>
                         {usersFriends ? usersFriends.map((friend, index) => {
                             return (
-                                <li key={index} className={styles.listItem}>
+                                <li key={index} className={`${styles.listItem} ${styles.listItemNotFirst}`}>
                                     <p 
                                     onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} 
                                     style={{ cursor: 'pointer', width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0 }}

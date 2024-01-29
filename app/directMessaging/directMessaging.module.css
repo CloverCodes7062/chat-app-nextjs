@@ -46,16 +46,21 @@
 
 
 .listItem {
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, .2);
-    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
     color: #fff;
-    border-radius: 10px;
-    width: fit-content;
     position: relative;
     list-style: none;
     margin: 0;
-    padding: 0;
-    margin-bottom: 15px;
-    padding: 5px;
+    width: 100%;
+    padding: 15px 0 15px 10px;
+    box-sizing: border-box;
+}
+
+.listItemNotFirst {
+    border-bottom: 2px solid rgba(255, 255, 255, .2);
+}
+
+
+.directMessagingH2 {
+    height: 70%;
+    cursor: pointer;
 }
