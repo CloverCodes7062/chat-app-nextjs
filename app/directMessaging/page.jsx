@@ -293,7 +293,7 @@ export default function DirectMessaging() {
         <div style={{ width: '99dvw', height: '99dvh' }}>
             {(usersFriends || session) ?
             <div style={{ display: 'grid', gridTemplateColumns: '400px auto', width: '100%', height: '100%' }}>
-                <div>
+                <div className={styles.section}>
                     <div style={{ display: 'flex', gap: '20px' }}>
                         <h2 
                             style={{ cursor: 'pointer' }} 
@@ -311,7 +311,7 @@ export default function DirectMessaging() {
                     <form onSubmit={(event) => handleSendingFriendRequest(event)} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                         <input 
                             placeholder="Enter a User's Email"
-                            style={{ paddingRight: '50px' }}
+                            style={{ width: '335px' }}
                             type="email"
                             value={friendRequestEmailValue}
                             onChange={(e) => setFriendRequestEmailValue(e.target.value)}
@@ -336,11 +336,16 @@ export default function DirectMessaging() {
                         </button>
                     </form>
                     {renderUsersFriends ? 
-                    <ul>
+                    <ul style={{ width: '100%' }}>
                         {usersFriends ? usersFriends.map((friend, index) => {
                             return (
-                                <li key={index} style={{ width: 'fit-content', position: 'relative' }}>
-                                    <p onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer', width: 'fit-content' }}>{friend.display_name}</p>
+                                <li key={index} className={styles.listItem}>
+                                    <p 
+                                    onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} 
+                                    style={{ cursor: 'pointer', width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0 }}
+                                    >
+                                        {friend.display_name}
+                                    </p>
                                 </li>
                             );
                         }) : null}
