@@ -24,18 +24,17 @@ export default function Register() {
             console.error('Error signing up:', error);
         } else {
             console.log('User signed up', data);
+            const createUserProfile = async () => {
+                const { error } = await supabase
+                .from('profiles')
+                .insert({ id: data.user.id, display_name: nameValue, rooms_allowed_in: [{"room_id":"2d03c198-ce3a-43ec-9aab-043fa2a2fcc7","room_name":"chatroom1"}] })
+    
+                setNameValue('');
+            };
+            
+            await createUserProfile();
             router.push('/login');
         }
-
-        const createUserProfile = async () => {
-            const { error } = await supabase
-            .from('profiles')
-            .insert({ id: data.user.id, display_name: nameValue, rooms_allowed_in: [{"room_id":"2d03c198-ce3a-43ec-9aab-043fa2a2fcc7","room_name":"chatroom1"}] })
-
-            setNameValue('');
-        };
-
-        createUserProfile();
 
         setEmailValue('');
         setPasswordValue('');

@@ -342,9 +342,11 @@ export default function DirectMessaging() {
                             return (
                                 <li key={index} className={`${styles.listItem} ${styles.listItemNotFirst}`} onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer', display: 'flex', gap: '20px' }} >
                                     <img src={friend.profile_picture} width={75} height={75} style={{ borderRadius: '50%' }}/>
-                                    <p style={{ width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0, backgroundColor: 'salmon', verticalAlign: 'center' }}>
-                                        {friend.display_name}
-                                    </p>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <p style={{ width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0 }}>
+                                            {friend.display_name}
+                                        </p>
+                                    </div>
                                 </li>
                             );
                         }) : null}
