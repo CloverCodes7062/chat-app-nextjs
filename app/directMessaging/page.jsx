@@ -279,7 +279,7 @@ export default function DirectMessaging() {
         .select('pending_friend_requests')
         .eq('user_email', friendRequestEmailValue)
 
-        const updatedPendingFriends = [...(pendingFriends[0].pending_friend_requests || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id }];
+        const updatedPendingFriends = [...(pendingFriends[0].pending_friend_requests || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id, profile_picture: usersProfile.profile_picture }];
 
         const { error: updateError } = await supabase
         .from('profiles')
@@ -340,11 +340,9 @@ export default function DirectMessaging() {
                     <ul style={{ width: '100%', margin: 0, padding: 0, marginTop: '15px' }}>
                         {usersFriends ? usersFriends.map((friend, index) => {
                             return (
-                                <li key={index} className={`${styles.listItem} ${styles.listItemNotFirst}`}>
-                                    <p 
-                                    onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} 
-                                    style={{ cursor: 'pointer', width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0 }}
-                                    >
+                                <li key={index} className={`${styles.listItem} ${styles.listItemNotFirst}`} onClick={() => handleFriendClicked({ friendsEmail: friend.email, friendsUuid: friend.uuid, friendsName: friend.display_name })} style={{ cursor: 'pointer', display: 'flex', gap: '20px' }} >
+                                    <img src={friend.profile_picture} width={75} height={75} style={{ borderRadius: '50%' }}/>
+                                    <p style={{ width: 'fit-content', fontWeight: 'bold', fontSize: '20px', margin: 0, padding: 0, backgroundColor: 'salmon', verticalAlign: 'center' }}>
                                         {friend.display_name}
                                     </p>
                                 </li>

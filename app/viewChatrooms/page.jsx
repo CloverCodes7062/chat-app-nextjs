@@ -11,7 +11,6 @@ export default function ViewChatrooms() {
     const uuid = uuidv4();
     const [session, setSession] = useState(null);
     
-    const [displayName, setDisplayName] = useState('');
     const [roomsAllowedIn, setRoomsAllowedIn] = useState([]);
 
     const [userCreatedChatroomName, setUserCreatedChatroomName] = useState('');
@@ -39,23 +38,10 @@ export default function ViewChatrooms() {
 
     useEffect(() => {
         if (session) {
-            console.log('session:', session);
-            console.log('session.user.email', session.user.email);
-
-            const getUserProfile = async () => {
-                const { data: userProfile } = await supabase
-                .from('profiles')
-                .select()
-                .eq('id', session.user.id)
-
-                setDisplayName(userProfile[0].display_name);
-            }
 
             const getRoomsAllowedin = async () => {
-                const { data: chatrooms, error } = await supabase
-                .from('chatrooms')
-                .select('room_id, chatroom_name')
-                .contains('users_allowed_in', [session.user.id])
+                const response = await fetch(`/api/getRoomsAllowedIn?userId=${session.user.id}`);
+                const chatrooms = await response.json();
                 
                 setRoomsAllowedIn(chatrooms);
                 console.log('chatrooms', chatrooms);
@@ -90,8 +76,6 @@ export default function ViewChatrooms() {
 
             getRoomsAllowedin();
 
-            getUserProfile();
-
             createRealTimeSubscription();
         }
     }, [session]);
@@ -102,13 +86,23 @@ export default function ViewChatrooms() {
         const response = await fetch(`/api/getMeetingId?userCreatedChatroomName=${userCreatedChatroomName}`);
         const data = await response.json();
 
-        const { error } = await supabase
-        .from('chatrooms')
-        .insert({ created_by: session.user.id, chatroom_name: userCreatedChatroomName, users_allowed_in: [session.user.id], meeting_id: data.id })
 
-        if (error) {
-            console.log('Error Inserting New Room', error);
-        }
+        const isRoomCreated = await fetch(`/api/postCreateNewRoom`, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                created_by: session.user.id,
+                chatroom_name: userCreatedChatroomName,
+                users_allowed_in: [session.user.id],
+                meeting_id: data.id
+            }),
+        });
+
+        const isRoomCreatedJSON = await isRoomCreated.json();
+
+        console.log('isRoomCreatedJSON', isRoomCreatedJSON);
 
         setUserCreatedChatroomName('');
 
