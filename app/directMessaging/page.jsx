@@ -54,10 +54,8 @@ export default function DirectMessaging() {
 
     useEffect(() => {
         const getUserProfile = async () => {
-            const { data: currUsersProfile, error } = await supabase
-            .from('profiles')
-            .select()
-            .eq('id', session.user.id);
+            const response = await fetch(`/api/getCurrUsersProfile?userId=${session.user.id}`);
+            const currUsersProfile = await response.json();
 
             setUsersProfile(currUsersProfile[0]);
 
@@ -133,12 +131,9 @@ export default function DirectMessaging() {
         setCurrentlyViewFriend({ friendsEmail, friendsUuid, friendsName });
 
         const getMessagesSentFromAndToCurrFriend = async () => {
+            const response = await fetch(`/api/getDirectMessagesSentToAndFrom?userId=${session.user.id}&friendsUuid=${friendsUuid}`);
+            const sentFromAndToCurrFriend = await response.json();
 
-            const { data: sentFromAndToCurrFriend, error } = await supabase
-                .rpc('get_messages_between_users', { user_id: session.user.id, friend_id: friendsUuid })
-                .order('created_at')
-            
-            
             console.log('sentFromAndToCurrFriend', sentFromAndToCurrFriend);
 
             setCurrentlyViewFriendMessagesSentToAndFrom(sentFromAndToCurrFriend);
