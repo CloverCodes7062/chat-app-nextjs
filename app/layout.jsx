@@ -32,6 +32,7 @@ export default function RootLayout({ children }) {
                     <a href='/register' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Register</button></a>
                     <a href='/viewChatrooms' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>View Chatrooms</button></a>
                     <a href='/directMessaging' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Send a Direct Message</button></a>
+                    <a href='/editProfile' style={{ width: 'fit-content', height: 'fit-content', marginLeft: 'auto', position: 'relative', zIndex: 125 }}><button>Edit Profile</button></a>
                 </nav>
                 : null}
                 {children}
