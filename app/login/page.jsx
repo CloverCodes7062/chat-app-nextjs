@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { supabase } from '@/supabaseClient';
 import { useState } from 'react';
 import { redirect, useRouter } from 'next/navigation';
+import styles from './login.module.css';
 
 export default function Login() {
     const [emailValue, setEmailValue] = useState('');
@@ -30,13 +31,10 @@ export default function Login() {
     };
 
     return (
-        <div>
-            <h1>Placeholder Login Page</h1>
-            <p>
-                Welcome to the Placeholder Login Page
-            </p>
-            <form onSubmit={handleLogin}>
-                <div className="input-box">
+        <div className={styles.section}>
+            <form onSubmit={handleLogin} style={{ width: '100%', marginTop: 'auto', marginBottom: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <h1 style={{ textAlign: 'center' }}>Login</h1>
+                <div className="input-box" style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <input 
                         type="email" 
                         name="email" 
@@ -44,9 +42,10 @@ export default function Login() {
                         value={emailValue}
                         onChange={(e) => {setEmailValue(e.target.value)}} 
                         required
+                        style={{ width: '60%', fontSize: '16px', height: '25px' }}
                     />
                 </div>
-                <div className="input-box">
+                <div className="input-box" style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <input 
                         type="password" 
                         name="password" 
@@ -54,6 +53,7 @@ export default function Login() {
                         value={passwordValue}
                         onChange={(e) => {setPasswordValue(e.target.value)}}
                         required
+                        style={{ width: '60%', fontSize: '16px', height: '25px' }}
                     />
                 </div>
                 <button type='submit'>Login</button>

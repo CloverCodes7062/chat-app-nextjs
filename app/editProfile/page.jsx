@@ -39,6 +39,12 @@ export default function editProfile() {
         event.preventDefault();
 
         console.log(newDisplayName, newEmail, newPassword, newProfilePicture);
+
+        if (newEmail) {
+            const { data, error } = await supabase.auth.updateUser({
+                email: newEmail,
+            });
+        }
     };
 
     return(

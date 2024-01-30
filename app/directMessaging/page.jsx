@@ -24,6 +24,8 @@ export default function DirectMessaging() {
 
     const [friendRequestEmailValue, setFriendRequestEmailValue] = useState('');
 
+    const [renderNoUserFound, setRenderNoUserFound] = useState(false);
+
     const endOfMessagesRef = useRef(null);
 
     const router = useRouter();
@@ -274,12 +276,21 @@ export default function DirectMessaging() {
         .select('pending_friend_requests')
         .eq('user_email', friendRequestEmailValue)
 
-        const updatedPendingFriends = [...(pendingFriends[0].pending_friend_requests || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id, profile_picture: usersProfile.profile_picture }];
+        if (pendingFriends.length < 1) {
+            console.log('Error while sending friend request', error);
+            setRenderNoUserFound(true);
 
-        const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ pending_friend_requests: updatedPendingFriends })
-        .eq('user_email', friendRequestEmailValue);
+            setTimeout(() => {
+                setRenderNoUserFound(false);
+            }, 3000);
+        } else {
+            const updatedPendingFriends = [...(pendingFriends[0].pending_friend_requests || []), { display_name: usersProfile.display_name, email: session.user.email, uuid: session.user.id, profile_picture: usersProfile.profile_picture }];
+
+            const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ pending_friend_requests: updatedPendingFriends })
+            .eq('user_email', friendRequestEmailValue);
+        }
 
         setFriendRequestEmailValue('');
     };
@@ -331,6 +342,9 @@ export default function DirectMessaging() {
                             <FontAwesomeIcon icon={faPaperPlane} className={styles.sentMessageIcon} />
                         </button>
                     </form>
+                    {renderNoUserFound ? 
+                    <p>No User Found With That Email</p>
+                    : null}
                     {renderUsersFriends ? 
                     <ul style={{ width: '100%', margin: 0, padding: 0, marginTop: '15px' }}>
                         {usersFriends ? usersFriends.map((friend, index) => {
