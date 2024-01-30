@@ -40,9 +40,45 @@ export default function editProfile() {
 
         console.log(newDisplayName, newEmail, newPassword, newProfilePicture);
 
+        const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select()
+
+        console.log('profiles', profiles);
+
+        /* await profiles.forEach(async (profile) => {
+
+            const newFriends = [];
+            let pushedNewFriend = false;
+
+            await profile.friends.forEach((friend) => {
+                if (friend.email == 'clovercodes7062@gmail.com') {
+                    const newFriend = { ...friend, email: 'stacymccarrell@outlook.com' };
+                    newFriends.push(newFriend);
+                    pushedNewFriend = true;
+                } else {
+                    newFriends.push(friend);
+                }
+            });
+
+            if (pushedNewFriend) {
+                console.log(`Profile uuid ${profile.id} newFriends ${newFriends}`);
+                const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ friends: newFriends })
+                .eq('id', profile.id);
+            }
+        }); */
+
         if (newEmail) {
             const { data, error } = await supabase.auth.updateUser({
                 email: newEmail,
+            });
+        }
+
+        if (newPassword) {
+            const { data, error } = await supabase.auth.updateUser({
+                password: newPassword,
             });
         }
     };
