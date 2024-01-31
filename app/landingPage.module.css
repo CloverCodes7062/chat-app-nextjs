@@ -17,3 +17,79 @@
   position: relative;
   align-items: flex-start;
 }
+
+.mainDiv {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: minmax(400px, auto) minmax(300px, auto) minmax(250px, auto) minmax(200px, auto) minmax(150px, auto) minmax(200px, auto) minmax(100px, auto);
+  gap: 20px;
+  max-width: 1200px;
+  padding: 2rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.heroSection {
+  text-align: center;
+}
+
+.heroSection h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.heroSection p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.featuresOverview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.featuresOverview h2 {
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
+  margin-top: -10px;
+  text-align: center;
+}
+
+.featuresOverview ul {
+  list-style: none;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.featuresOverview ul li {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.benefitsSection, .testimonials, .securityAndPrivacy, .aboutSection, .faqs {
+  padding: 2rem;
+  background-color: rgba(40, 0, 70, 0.6);
+  border-radius: 8px;
+}
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+.footer p {
+  color: rgba(255, 255, 255, 0.7);
+}
