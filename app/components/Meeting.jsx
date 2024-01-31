@@ -40,18 +40,18 @@ export default function Meeting({ meetingId }) {
     return (
         <>
             {meeting ?
-            (<DyteMeeting meeting={meeting}></DyteMeeting>)
+            <DyteMeeting meeting={meeting}></DyteMeeting>
             : 
-            (<div>
-                <h1>Join a Meeting</h1>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '20px' }}>
+                <h1>Join The Group Call</h1>
                 <input
                     type="text"
                     placeholder="Participant Name"
                     value={participantName}
                     onChange={(e) => setParticipantName(e.target.value)}
                 />
-                <button onClick={handleJoinMeeting}>Join Meeting</button>
-            </div>)
+                <button onClick={handleJoinMeeting}>Join Call</button>
+            </div>
             }
         </>
       );

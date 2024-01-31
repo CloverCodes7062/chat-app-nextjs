@@ -270,11 +270,6 @@ export default function Chatroom({ params }) {
                         <button type="submit">Invite User</button>
                     </form>
                 </div>
-                <div style={{maxHeight: 'fit-content', maxWidth: 'fit-content', marginLeft: 'auto', marginRight: 'auto'}}>
-                    <Link href="/">
-                        <button>To Landing Page</button>
-                    </Link>
-                </div>
                 <Meeting meetingId={meetingId} />
             </div>
             : null
