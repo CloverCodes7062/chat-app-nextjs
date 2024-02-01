@@ -3,32 +3,13 @@ import Link from 'next/link';
 import { supabase } from '@/supabaseClient';
 import styles from './landingPage.module.css';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import 'animate.css';
+import { NavStyleContext } from './layout';
 
 export default function HomePage() {
     const sectionsRef = useRef([]);
-
-
-    const handleSignOut = async () => {
-        const { error } = await supabase.auth.signOut();
-
-        if (error) {
-            console.log('Error signing user out');
-        } else {
-            console.log('Signed out');
-        }
-    };
-
-    const checkSession = async () => {
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error) {
-            console.log('Error checking session:', error);
-        } else {
-            console.log('Session:', data.session);
-        }
-    };
+    const { navStyles, setNavStyles } = useContext(NavStyleContext);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
@@ -45,6 +26,9 @@ export default function HomePage() {
             sections.forEach((section) => observer.observe(section));
         }
 
+        setNavStyles(prevStyles => {
+            return {...prevStyles, flexDirection: 'unset', right: '30dvw'}
+        });
     }, []);
 
     return (
