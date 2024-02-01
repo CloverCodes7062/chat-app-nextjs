@@ -10,8 +10,11 @@ import { NavStyleContext } from './layout';
 export default function HomePage() {
     const sectionsRef = useRef([]);
     const { navStyles, setNavStyles } = useContext(NavStyleContext);
-
+    const body = document.querySelector('body');
+    body.style.overflowX = 'hidden';
+    
     useEffect(() => {
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -29,6 +32,7 @@ export default function HomePage() {
         setNavStyles(prevStyles => {
             return {...prevStyles, flexDirection: 'unset', right: '30dvw'}
         });
+
     }, []);
 
     return (

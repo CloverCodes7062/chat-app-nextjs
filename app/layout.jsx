@@ -23,6 +23,13 @@ export default function RootLayout({ children }) {
             setNavClass('animate__animated animate__fadeInRight');
             setRenderNav(true);
         }
+
+        const body = document.querySelector('body');
+        body.style.overflowX = 'hidden';
+
+        setTimeout(() => {
+            body.style.overflowX = 'auto';
+        }, 500);
     };
 
     const navStyleValue = { navStyles, setNavStyles };
