@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from './editProfile.module.css';
 
-export default function editProfile() {
+export default function EditProfile() {
     const router = useRouter();
     const [session, setSession] = useState(null);
     
