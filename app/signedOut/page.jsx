@@ -3,7 +3,7 @@
 import { supabase } from "@/supabaseClient";
 import { useState } from "react";
 
-export default function() {
+export default function SignedOut(){
     const [session, setSession] = useState(null);
     const [hasSetSession, setHasSetSession] = useState(false);
 
