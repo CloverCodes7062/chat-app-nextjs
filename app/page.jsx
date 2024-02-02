@@ -38,8 +38,8 @@ export default function HomePage() {
     return (
         <div className={styles.mainDiv}>
             <div className={`${styles.heroSection} ${styles.section}`}>
-                <h1>Welcome to Clover's Chat App!</h1>
-                <p>The ultimate real-time chat experience.</p>
+                <h1>{`Welcome to Clover's Chat App!`}</h1>
+                <p>{`The ultimate real-time chat experience.`}</p>
                 <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
                     <Image className={'animate__animated animate__fadeInLeft'} width={846} height={413} src='/heroImage1.png' style={{ borderRadius: '15px' }}/>
                     <Image className={'animate__animated animate__fadeInRight'} width={846} height={413} src='/heroImage2.png' style={{ borderRadius: '15px' }}/>
@@ -59,40 +59,40 @@ export default function HomePage() {
             <div className={`${styles.featuresOverview} ${styles.section}`}>
                 <h2>Features</h2>
                 <ul>
-                    <li>Real-Time Messaging</li>
-                    <li>Voice & Video Calls</li>
-                    <li>Screen Sharing</li>
-                    <li>Create & Join Chat Rooms</li>
-                    <li>Send Friend Requests</li>
+                    <li>{`Real-Time Messaging`}</li>
+                    <li>{`Voice & Video Calls`}</li>
+                    <li>{`Screen Sharing`}</li>
+                    <li>{`Create & Join Chat Rooms`}</li>
+                    <li>{`Send Friend Requests`}</li>
                 </ul>
             </div>
 
             <div ref={element => sectionsRef.current[0] = element} className={`${styles.benefitsSection} ${styles.section}`}>
-                <h2>Why Choose Clover's Chat App?</h2>
-                <p>Connect instantly, share moments, and collaborate effectively, with a user-friendly design to offer a seamless communication experience.</p>
+                <h2>{`Why Choose Clover's Chat App?`}</h2>
+                <p>{`Connect instantly, share moments, and collaborate effectively, with a user-friendly design to offer a seamless communication experience.`}</p>
             </div>
 
             <div ref={element => sectionsRef.current[1] = element} className={`${styles.testimonials} ${styles.section}`}>
                 <h2>What Our Users Say</h2>
-                <p>"I've never experienced a more seamless chat interaction!" - User A</p>
-                <p>"The video call quality is exceptional, and screen sharing is a breeze!" - User B</p>
-                <p>"Creating and joining chat rooms has never been easier. Highly recommend!" - User C</p>
+                <p>{`"I've never experienced a more seamless chat interaction!" - User A`}</p>
+                <p>{`"The video call quality is exceptional, and screen sharing is a breeze!" - User B`}</p>
+                <p>{`"Creating and joining chat rooms has never been easier. Highly recommend!" - User C`}</p>
             </div>
 
             <div ref={element => sectionsRef.current[2] = element} className={`${styles.aboutSection} ${styles.section}`}>
                 <h2>About Us</h2>
-                <p>Created by a passionate, aspiring software developer</p>
+                <p>{`Created by a passionate, aspiring software developer`}</p>
             </div>
 
             <div ref={element => sectionsRef.current[3] = element} className={`${styles.faqs} ${styles.section}`}>
                 <h2>FAQs</h2>
-                <p>How do I create a chat room? <br/> Simply click on the 'Create Room' button to start your own chat space.</p>
-                <p>Is voice and video call supported? <br/> Yes, we offer high-quality voice and video calling features for comprehensive communication.</p>
-                <p>Can I share my screen during calls? <br/> Absolutely! Our screen sharing is seamless and user-friendly.</p>
+                <p>How do I create a chat room? <br/>{` Simply click on the 'Create Room' button to start your own chat space.`}</p>
+                <p>Is voice and video call supported? <br/>{` Yes, we offer high-quality voice and video calling features for comprehensive communication.`}</p>
+                <p>Can I share my screen during calls? <br/>{` Absolutely! Our screen sharing is seamless and user-friendly.`}</p>
             </div>
 
             <div className={`${styles.footer} ${styles.section}`}>
-                <p>Contact Us | Terms of Service | Privacy Policy</p>
+                <p>{`Contact Us | Terms of Service | Privacy Policy`}</p>
             </div>
         </div>
     );
