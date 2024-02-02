@@ -4,7 +4,7 @@ import Link from 'next/link';
 import "./globals.css";
 import 'animate.css';
 import styles from './landingPage.module.css';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export const NavStyleContext = createContext();
 
@@ -41,14 +41,12 @@ export default function RootLayout({ children }) {
             setNavClass('animate__animated animate__fadeInRight');
             setRenderNav(true);
         }
+    };
 
+    useEffect(() => {
         const body = document.querySelector('body');
         body.style.overflowX = 'hidden';
-
-        setTimeout(() => {
-            body.style.overflowX = 'auto';
-        }, 500);
-    };
+    }, []);
 
     const navStyleValue = { navStyles, setNavStyles };
     return (

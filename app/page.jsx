@@ -10,11 +10,11 @@ import { NavStyleContext } from './layout';
 export default function HomePage() {
     const sectionsRef = useRef([]);
     const { navStyles, setNavStyles } = useContext(NavStyleContext);
-    const body = document.querySelector('body');
-    body.style.overflowX = 'hidden';
     
     useEffect(() => {
-
+        const body = document.querySelector('body');
+        body.style.overflowX = 'hidden';
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
