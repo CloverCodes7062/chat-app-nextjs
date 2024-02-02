@@ -15,3 +15,5 @@ export async function GET(req, res) {
       return new Response('Internal Error checking Session');
     }
 }
+
+export const dynamic = 'force-dynamic';

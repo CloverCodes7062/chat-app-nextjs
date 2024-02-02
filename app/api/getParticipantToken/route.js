@@ -35,3 +35,5 @@ export async function GET(req, res) {
         return new Response('Internal Error');
     }
 }
+
+export const dynamic = 'force-dynamic';

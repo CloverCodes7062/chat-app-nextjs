@@ -16,3 +16,5 @@ export async function GET(req, res) {
       return new Response(JSON.stringify({ message: 'Internal Error Inserting New Room' }));
     }
 }
+
+export const dynamic = 'force-dynamic';
