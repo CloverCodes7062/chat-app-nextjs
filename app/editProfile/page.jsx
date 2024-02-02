@@ -38,12 +38,61 @@ export default function editProfile() {
     const handleEditProfileFormSubmit = async (event) => {
         event.preventDefault();
 
-        console.log(newDisplayName, newEmail, newPassword, newProfilePicture);
+        console.log(newDisplayName, newPassword, newProfilePicture);
 
         if (newPassword) {
             const { data, error } = await supabase.auth.updateUser({
                 password: newPassword,
             });
+
+            if (error) {
+                console.log('Error Updating Password,', error);
+            }
+        }
+
+        if (newDisplayName) {
+            const { error } = await supabase
+            .from('profiles')
+            .update({ display_name: newDisplayName })
+            .eq('id', session.user.id)
+
+            if (error) {
+                console.log('Error Updating Display Name,', error);
+            }
+        }
+
+        if (newProfilePicture) {
+            console.log(newProfilePicture);
+
+            const { data: updatingProfilePicture, error } = await supabase
+            .storage
+            .from('profilePictures')
+            .upload(`${session.user.id}ProfilePicture`, newProfilePicture, {
+                cacheControl: '3600',
+                upsert: true
+            })
+
+            if (error) {
+                console.log('Error changing profile picture,', error);
+            }
+
+            
+            const { data: publicUrlForProfilePicture } = supabase
+            .storage
+            .from('profilePictures')
+            .getPublicUrl(`${session.user.id}ProfilePicture`)
+
+            console.log('publicUrlForProfilePicture', publicUrlForProfilePicture);
+
+            const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ profile_picture: publicUrlForProfilePicture.publicUrl })
+            .eq('id', session.user.id);
+
+            if (updateError) {
+                console.log('Error updating profile picture,', updateError);
+            }
+
         }
     };
 
@@ -61,12 +110,6 @@ export default function editProfile() {
                         onChange={(e) => setNewDisplayNameValue(e.target.value)}
                     />
                     <input 
-                        placeholder="Enter A New Email"
-                        value={newEmail}
-                        onChange={(e) => setNewEmailValue(e.target.value)}
-                        type="email"
-                    />
-                    <input 
                         placeholder="Enter A Password"
                         value={newPassword}
                         onChange={(e) => setNewPasswordValue(e.target.value)}
@@ -74,8 +117,7 @@ export default function editProfile() {
                     />
                     <input 
                         placeholder="Upload A New Profile Picture"
-                        value={newProfilePicture}
-                        onChange={(e) => setNewProfilePictureValue(e.target.value)}
+                        onChange={(e) => setNewProfilePictureValue(e.target.files[0])}
                         type="file"
                     />
                     <button type="submit">Submit</button>
