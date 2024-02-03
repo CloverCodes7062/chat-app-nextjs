@@ -74,7 +74,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 }
 
 .featuresOverview ul li {
@@ -105,4 +104,40 @@
 
 .footer p {
   color: rgba(255, 255, 255, 0.7);
+}
+
+.homeMainImgDiv {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.homeMainImgDiv img {
+  width: 846px;
+  height: 413px;
+  border-radius: 15px;
+}
+
+@media (max-width: 600px) {
+  .homeMainImgDiv {
+    flex-direction: column;
+  }
+  
+  .homeMainImgDiv img {
+    width: 98%;
+    height: auto;
+  }
+}
+
+.getStartedDiv {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-left: 25px;
+}
+
+@media (max-width: 600px) {
+  .getStartedDiv {
+    margin-left: -5px;
+  }
 }

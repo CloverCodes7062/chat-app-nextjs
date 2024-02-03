@@ -40,12 +40,12 @@ export default function HomePage() {
             <div className={`${styles.heroSection} ${styles.section}`}>
                 <h1>{`Welcome to Clover's Chat App!`}</h1>
                 <p>{`The ultimate real-time chat experience.`}</p>
-                <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                    <Image className={'animate__animated animate__fadeInLeft'} width={846} height={413} src='/heroImage1.png' style={{ borderRadius: '15px' }}/>
-                    <Image className={'animate__animated animate__fadeInRight'} width={846} height={413} src='/heroImage2.png' style={{ borderRadius: '15px' }}/>
+                <div className={styles.homeMainImgDiv}>
+                    <img className={'animate__animated animate__fadeInLeft'} src='/heroImage1.png' />
+                    <img className={'animate__animated animate__fadeInRight'} src='/heroImage2.png' />
                 </div>
                 <br />
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginLeft: '25px'}}>
+                <div className={styles.getStartedDiv}>
                     <Link href='/register'>
                         <button>Get Started</button>
                     </Link>
