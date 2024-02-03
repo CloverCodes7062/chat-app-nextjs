@@ -16,6 +16,16 @@
     padding: 30px 40px;
 }
 
+@media (max-width: 600px) {
+    .mainSection {
+        width: 90%;
+        height: 95dvh;
+        padding-left: unset;
+        padding-right: unset;
+        overflow-y: auto;
+    }
+}
+
 .mainUl {
     display: 'flex';
     flex-direction: 'column';
@@ -32,6 +42,12 @@
     overflow-y: auto;
     width: 90%;
     position: relative;
+}
+
+@media (max-width: 600px) {
+    .mainUl {
+        height: 1000px;
+    }
 }
 
 .chatMessage p {
@@ -54,6 +70,22 @@
     border-radius: 16px;
     min-height: 200px;
     margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .chatMessage {
+        width: 300px;
+        max-width: 350px;
+        min-height: 100px;
+    }
+
+    .dateP {
+        display: none;
+    }
+
+    .chatMessage p {
+        font-size: 12px;
+    }
 }
 
 .receivedMessage {

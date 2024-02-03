@@ -240,7 +240,7 @@ export default function Chatroom({ params }) {
                                 {(message.sent_by_email == session.user.email) ? <button onClick={(event) => handleDeleteChatMessage(event, message.message_id)} style={{position: 'absolute', top: '10px', left: '10px', padding: '10px'}}>Delete</button> : null}
                                 <p style={{fontSize: '18px', color: '#fff'}}>{message.sent_by_name}</p>
                                 <p style={{fontSize: '18px', color: '#fff'}}>{message.content}</p>
-                                <p style={{fontSize: '18px', color: '#fff', position: 'absolute', top: '20px', right: '20px'}}>{(new Date(message.created_at)).toLocaleString()}</p>
+                                <p className={styles.dateP} style={{fontSize: '18px', color: '#fff', position: 'absolute', top: '20px', right: '20px'}}>{(new Date(message.created_at)).toLocaleString()}</p>
                             </li>
                         );
                     })}
