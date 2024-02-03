@@ -9,5 +9,14 @@
     color: #fff;
     border-radius: 10px;
     width: 40%;
-    height: 98dvh;
+    height: 80dvh;
+}
+
+@media (max-width: 600px) {
+    .section {
+        height: 60dvh;
+        width: 80%;
+        padding-bottom: 25%;
+        box-sizing: border-box;
+    }
 }
