@@ -46,6 +46,14 @@ button {
     border: none;
 }
 
+@media (max-width: 600px) {
+    button {
+        font-size: 16px;
+        min-width: 50px;
+        padding: 10px 10px;
+    }
+}
+
 button:hover {
     box-shadow: 0 0 10px rgba(186, 88, 224, 0.75);
 }

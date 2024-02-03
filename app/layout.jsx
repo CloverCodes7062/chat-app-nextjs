@@ -29,7 +29,7 @@ const FriendsProvider = ({ children }) => {
 export default function RootLayout({ children }) {
     const [renderNav, setRenderNav] = useState(false);
     const [navClass, setNavClass] = useState('animate__animated animate__fadeIn');
-    const [navStyles, setNavStyles] = useState({ zIndex: '150', width: '300px', height: 'fit-content', position: 'absolute', top: '1vh', right: '3vw', display: 'flex', flexDirection: 'column', gap: '15px' });
+    const [navStyles, setNavStyles] = useState({ zIndex: '150', width: '300px', height: 'fit-content', position: 'absolute', top: '1vh', right: '2vw', display: 'flex', flexDirection: 'column', gap: '15px' });
 
     const handleMenuClick = async () => {
         if (renderNav) {
